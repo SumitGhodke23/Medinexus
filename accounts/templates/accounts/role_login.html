@@ -1,0 +1,6 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ role_title }} Login | MediNexusAI</title><link rel="stylesheet" href="{% static 'css/app.css' %}"></head>
+<body><main class="login-page"><section class="login-card"><a class="brand" href="{% url 'public_home' %}"><span class="brand-mark">+</span><span>medinexusai</span></a><p class="eyebrow login-eyebrow">{{ role_title }} portal</p><h1>{{ role_title }} Login</h1><p>Use your {{ role_title|lower }} account to continue.</p>{% if form.non_field_errors %}<p class="login-error">{{ form.non_field_errors|striptags }}</p>{% endif %}<form method="post">{% csrf_token %}<label>Username<input name="username" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="primary-btn" type="submit">Sign in as {{ role_title }}</button></form>{% if role == 'patient' %}<p class="login-switch">New patient? <a class="back-link" href="{% url 'patient_signup' %}">Create an account</a></p>{% endif %}<a class="back-link" href="{% url 'login' %}">Choose another login</a></section></main></body>
+</html>

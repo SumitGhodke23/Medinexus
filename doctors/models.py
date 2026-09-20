@@ -1,8 +1,17 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Doctor(models.Model):
     doctor_id = models.AutoField(primary_key=True)
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="doctor_record",
+    )
 
     full_name = models.CharField(max_length=100)
 
@@ -32,6 +41,10 @@ class Doctor(models.Model):
     )
 
     available = models.BooleanField(default=True)
+
+    availability_start = models.TimeField(default="09:00")
+    availability_end = models.TimeField(default="17:00")
+    slot_duration_minutes = models.PositiveIntegerField(default=30)
 
     created_at = models.DateTimeField(
         auto_now_add=True

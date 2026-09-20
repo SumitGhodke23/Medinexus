@@ -1,10 +1,10 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from accounts.permissions import role_required
 from beds.models import Bed
 from departments.models import Department
 
 
-@login_required
+@role_required("admin")
 def overview(request):
 	return render(request, "hospital/overview.html", {
 		"beds": Bed.objects.count(),

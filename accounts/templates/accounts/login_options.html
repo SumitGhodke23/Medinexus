@@ -1,0 +1,6 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choose login | MediNexusAI</title><link rel="stylesheet" href="{% static 'css/app.css' %}"></head>
+<body><main class="login-page"><section class="login-card login-options"><a class="brand" href="{% url 'public_home' %}"><span class="brand-mark">+</span><span>medinexusai</span></a><h1>Choose your portal.</h1><p>Sign in to the workspace made for your role.</p><div class="login-options-grid"><a href="{% url 'patient_login' %}"><strong>Patient Login</strong><span>Appointments, prescriptions, reports, and medical history.</span></a><a href="{% url 'doctor_login' %}"><strong>Doctor Login</strong><span>Assigned patients, appointments, and authorized records.</span></a><a href="{% url 'admin_login' %}"><strong>Admin Login</strong><span>Hospital management and complete administration.</span></a></div><a class="signup-link" href="{% url 'patient_signup' %}">New patient? Create a patient account</a><a class="back-link" href="{% url 'public_home' %}">Back to public hospital information</a></section></main></body>
+</html>

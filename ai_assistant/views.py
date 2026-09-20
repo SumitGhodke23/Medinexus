@@ -1,16 +1,18 @@
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 from datetime import datetime
 import re
 from appointments.models import Appointment
+from appointments.views import ACTIVE_STATUSES, available_slots
 from beds.models import Bed
 from billing.models import Bill
 from doctors.models import Doctor
 from laboratory.models import LaboratoryTest
 from patients.models import Patients
 from .models import ChatMessage
+from accounts.permissions import role_required, user_role
+from accounts.services import notify
 
 
 def answer_question(question):
@@ -42,12 +44,16 @@ def appointment_reply(request, message):
 	pending = request.session.get("voice_appointment")
 	text = message.strip()
 	lower = text.lower()
+	role = user_role(request.user)
+	linked_patient = getattr(request.user, "patient_record", None)
 
 	if pending is None and any(word in lower for word in ("book appointment", "book an appointment", "make appointment", "make an appointment", "schedule appointment", "schedule an appointment", "book a doctor", "book me", "schedule a visit")):
-		pending = {}
+		pending = {"patient": linked_patient.pk} if role == "patient" and linked_patient else {}
+		if role == "patient" and not linked_patient:
+			return "Your account is not linked to a patient record yet. Contact hospital administration.", None
 		request.session["voice_appointment"] = pending
 		request.session.modified = True
-		return "I can book that appointment. What is the patient's full name?", None
+		return ("I can book that appointment. Which doctor should I book?" if pending.get("patient") else "I can book that appointment. What is the patient's full name?"), pending.get("patient")
 
 	if pending is None:
 		return None, None
@@ -109,7 +115,15 @@ def appointment_reply(request, message):
 		return "What is the reason for the visit?", pending.get("patient")
 
 	pending["reason"] = text
-	appointment = Appointment.objects.create(patient_id=pending["patient"], doctor_id=pending["doctor"], appointment_date=pending["date"], appointment_time=pending["time"], reason=pending["reason"])
+	doctor = Doctor.objects.get(pk=pending["doctor"])
+	from datetime import date, time
+	appointment_date = date.fromisoformat(pending["date"])
+	appointment_time = time.fromisoformat(pending["time"])
+	if pending["time"] not in available_slots(doctor, appointment_date):
+		return "That slot is no longer available. Please choose another time.", pending["patient"]
+	last_token = Appointment.objects.filter(doctor=doctor, appointment_date=appointment_date, status__in=ACTIVE_STATUSES).order_by("-queue_token").values_list("queue_token", flat=True).first() or 0
+	appointment = Appointment.objects.create(patient_id=pending["patient"], doctor=doctor, appointment_date=appointment_date, appointment_time=appointment_time, reason=pending["reason"], queue_token=last_token + 1, estimated_wait_minutes=last_token * doctor.slot_duration_minutes)
+	notify(appointment.patient.user, "appointment_booked", "Appointment booked", f"Appointment #{appointment.appointment_id} with Dr. {appointment.doctor.full_name} is booked. Token {appointment.queue_token}.")
 	request.session.pop("voice_appointment", None)
 	return f"Appointment booked for {appointment.patient.full_name} with Dr. {appointment.doctor.full_name} on {appointment.appointment_date} at {appointment.appointment_time}.", appointment.patient_id
 
@@ -122,21 +136,28 @@ def process_message(request, message):
 	return answer
 
 
-@login_required
+@role_required("admin", "doctor", "patient")
 def chat(request):
+	role = user_role(request.user)
+	patient = getattr(request.user, "patient_record", None)
+	conversation = ChatMessage.objects.select_related("patient").order_by("created_at")
+	if role == "patient":
+		conversation = conversation.filter(patient=patient) if patient else conversation.none()
+	elif role == "doctor":
+		conversation = conversation.filter(patient__appointment__doctor__user=request.user).distinct()
 	if request.method == "POST":
 		message = request.POST.get("message", "").strip()
 		if message:
-			patient_id = request.POST.get("patient") or None
+			patient_id = patient.pk if role == "patient" and patient else request.POST.get("patient") or None
 			answer = process_message(request, message)
 		return redirect("ai_chat")
 	return render(request, "ai_assistant/chat.html", {
-		"patients": Patients.objects.order_by("full_name"),
-		"messages": ChatMessage.objects.select_related("patient").order_by("created_at"),
+		"patients": Patients.objects.order_by("full_name") if role == "admin" else Patients.objects.filter(appointment__doctor__user=request.user).distinct() if role == "doctor" else Patients.objects.filter(pk=patient.pk) if patient else Patients.objects.none(),
+		"messages": conversation,
 	})
 
 
-@login_required
+@role_required("admin", "doctor", "patient")
 @require_POST
 def voice_api(request):
 	question = request.POST.get("question", "").strip()

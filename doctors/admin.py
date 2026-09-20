@@ -13,6 +13,7 @@ class DoctorAdmin(admin.ModelAdmin):
         'experience',
         'phone',
         'available',
+        'user',
     )
 
     search_fields = (

@@ -1,0 +1,6 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Patient signup | MediNexusAI</title><link rel="stylesheet" href="{% static 'css/app.css' %}"></head>
+<body><main class="login-page"><section class="login-card signup-card"><a class="brand" href="{% url 'public_home' %}"><span class="brand-mark">+</span><span>medinexusai</span></a><p class="eyebrow login-eyebrow">Patient portal</p><h1>Create your account.</h1><p>Sign up once, then use Patient Login to securely check your appointments, history, prescriptions, reports, and bills.</p>{% if form.non_field_errors %}<div class="login-error">{{ form.non_field_errors }}</div>{% endif %}<form method="post" class="signup-form">{% csrf_token %}{% for field in form %}<label>{{ field.label }}{{ field }}{% if field.errors %}<small class="field-error">{{ field.errors|striptags }}</small>{% endif %}</label>{% endfor %}<button class="primary-btn" type="submit">Create patient account</button></form><p class="login-switch">Already registered? <a class="back-link" href="{% url 'patient_login' %}">Patient Login</a></p><a class="back-link" href="{% url 'login' %}">Choose another login</a></section></main></body>
+</html>

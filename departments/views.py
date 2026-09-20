@@ -1,9 +1,9 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from accounts.permissions import role_required
 from .models import Department
 
 
-@login_required
+@role_required("admin")
 def department_list(request):
 	if request.method == "POST":
 		Department.objects.create(

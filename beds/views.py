@@ -1,10 +1,10 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from accounts.permissions import role_required
 from patients.models import Patients
 from .models import Bed
 
 
-@login_required
+@role_required("admin")
 def bed_list(request):
 	if request.method == "POST":
 		Bed.objects.create(

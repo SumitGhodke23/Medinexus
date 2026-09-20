@@ -1,9 +1,9 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from accounts.permissions import role_required
 from .models import Medicine
 
 
-@login_required
+@role_required("admin")
 def overview(request):
 	if request.method == "POST":
 		Medicine.objects.create(

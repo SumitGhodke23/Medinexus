@@ -14,4 +14,6 @@ urlpatterns = [
         views.appointment_add,
         name="appointment_add"
     ),
+    path("<int:appointment_id>/reschedule/", views.appointment_reschedule, name="appointment_reschedule"),
+    path("<int:appointment_id>/<str:action>/", views.appointment_action, name="appointment_action"),
 ]

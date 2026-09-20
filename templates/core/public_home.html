@@ -1,0 +1,20 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MediNexusAI | Hospital care</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="public-site">
+<header class="public-header"><a class="brand" href="{% url 'public_home' %}"><span class="brand-mark">+</span><span>medinexusai</span></a><nav class="site-nav"><a href="#departments">Departments</a><a href="#doctors">Doctors</a><a href="#services">Services</a><a href="#contact">Contact</a><a class="primary-btn" href="{% url 'login' %}">Choose login</a></nav></header>
+<main>
+<section class="public-hero"><div><p class="eyebrow">Connected hospital care</p><h1>Care that keeps moving with you.</h1><p>Find the right department, meet your care team, and securely manage appointments, prescriptions, reports, and medical history in one place.</p><a class="primary-btn" href="{% url 'login' %}">Choose your portal</a></div><div class="hero-note"><strong>24 / 7</strong><span>Care coordination</span><small>Appointments, clinical teams, and patient information connected.</small></div></section>
+<section id="services" class="public-section"><p class="eyebrow">What we offer</p><h2>One hospital, every next step.</h2><div class="public-cards"><article><span>01</span><h3>Appointments</h3><p>Book and follow appointments with available doctors.</p></article><article><span>02</span><h3>Clinical records</h3><p>Keep authorized reports, prescriptions, and history together.</p></article><article><span>03</span><h3>Coordinated care</h3><p>From laboratory services to pharmacy and billing support.</p></article></div></section>
+<section id="departments" class="public-section"><p class="eyebrow">Find your care</p><h2>Departments</h2><div class="directory-grid">{% for department in departments %}<article class="directory-item"><h3>{{ department.department_name }}</h3><p>{{ department.description|default:'Specialist care from an experienced clinical team.' }}</p><small>{{ department.contact_number|default:'Contact hospital reception' }}</small></article>{% empty %}<p>Our departments are being updated. Contact reception for help.</p>{% endfor %}</div></section>
+<section id="doctors" class="public-section"><p class="eyebrow">Meet the care team</p><h2>Available doctors</h2><div class="directory-grid">{% for doctor in doctors %}<article class="directory-item"><h3>Dr. {{ doctor.full_name }}</h3><p>{{ doctor.specialization }}</p><small>{% if doctor.department %}{{ doctor.department.department_name }} · {% endif %}{{ doctor.experience }} years experience</small></article>{% empty %}<p>Call reception to find an available doctor.</p>{% endfor %}</div></section>
+</main>
+<footer id="contact" class="public-footer"><div><strong>medinexusai</strong><p>Human care, clearly connected.</p></div><div><strong>Contact</strong><p>Hospital reception · 24 / 7<br>Use the patient portal for secure support.</p></div><a class="primary-btn" href="{% url 'login' %}">Choose login</a></footer>
+</body>
+</html>

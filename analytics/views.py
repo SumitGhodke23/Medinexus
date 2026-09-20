@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.shortcuts import render
 from appointments.models import Appointment
@@ -8,9 +7,10 @@ from departments.models import Department
 from laboratory.models import LaboratoryTest
 from patients.models import Patients
 from doctors.models import Doctor
+from accounts.permissions import role_required
 
 
-@login_required
+@role_required("admin")
 def summary(request):
 	bills = Bill.objects.all()
 	return render(request, "analytics/summary.html", {

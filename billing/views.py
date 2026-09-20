@@ -1,13 +1,14 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from decimal import Decimal, InvalidOperation
 from patients.models import Patients
 from .models import Bill
+from accounts.permissions import role_required, user_role
 
 
-@login_required
+@role_required("admin", "patient")
 def bill_list(request):
-	if request.method == "POST":
+	role = user_role(request.user)
+	if request.method == "POST" and role == "admin":
 		patient_id = request.POST.get("patient")
 		if patient_id:
 			def amount(name):
@@ -27,9 +28,12 @@ def bill_list(request):
 				notes=request.POST.get("notes", ""),
 			)
 			return redirect("bill_list")
+	bills = Bill.objects.select_related("patient").order_by("-bill_date", "-bill_id")
+	if role == "patient":
+		bills = bills.filter(patient__user=request.user)
 	return render(request, "billing/bill_list.html", {
-		"bills": Bill.objects.select_related("patient").order_by("-bill_date", "-bill_id"),
-		"patients": Patients.objects.order_by("full_name"),
+		"bills": bills,
+		"patients": Patients.objects.order_by("full_name") if role == "admin" else Patients.objects.filter(user=request.user),
 	})
 
 # Create your views here.

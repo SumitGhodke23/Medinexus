@@ -10,6 +10,7 @@ class Appointment(models.Model):
         ('Confirmed', 'Confirmed'),
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
+        ('Rescheduled', 'Rescheduled'),
     ]
 
     appointment_id = models.AutoField(primary_key=True)
@@ -36,9 +37,24 @@ class Appointment(models.Model):
         default='Pending'
     )
 
+    queue_token = models.PositiveIntegerField(null=True, blank=True)
+    estimated_wait_minutes = models.PositiveIntegerField(default=0)
+    cancellation_reason = models.TextField(blank=True)
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("doctor", "appointment_date", "appointment_time"),
+                condition=models.Q(status__in=("Pending", "Confirmed", "Rescheduled")),
+                name="unique_active_doctor_slot",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.patient.full_name} - {self.doctor.full_name}"

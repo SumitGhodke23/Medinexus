@@ -23,6 +23,18 @@ The deployment reads these environment variables:
 - `DJANGO_ALLOWED_HOSTS`: the deployed host, such as `.onrender.com`.
 - `DATABASE_URL`: PostgreSQL connection string supplied by Render.
 - `CSRF_TRUSTED_ORIGINS`: set to the exact HTTPS URL, for example `https://medinexusai.onrender.com`.
+- `EMAIL_BACKEND`: production email backend, for example `django.core.mail.backends.smtp.EmailBackend`.
+- `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`: SMTP credentials. Store the password only in Render environment variables.
+- `EMAIL_USE_TLS`: normally `True` for SMTP submission.
+- `DEFAULT_FROM_EMAIL`: verified sender address.
+
+Appointment reminders are available through:
+
+```powershell
+python manage.py send_appointment_reminders
+```
+
+Run that command from a scheduled Render cron job or an external scheduler once per hour. It sends reminders for confirmed appointments approximately 24 hours away.
 
 ## Local development
 
