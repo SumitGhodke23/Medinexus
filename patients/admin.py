@@ -11,6 +11,7 @@ class PatientsAdmin(admin.ModelAdmin):
         'blood_group',
         'disease',
         'created_at',
+        'user',
     )
 
     search_fields = (

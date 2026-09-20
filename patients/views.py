@@ -1,8 +1,10 @@
 
 from django.shortcuts import redirect, render
+from accounts.permissions import role_required
 from .models import Patients
 
 
+@role_required("admin")
 def patient_list(request):
     if request.method == "POST":
         Patients.objects.create(
