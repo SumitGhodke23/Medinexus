@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Doctors | MediNexusAI{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">Clinical team</p><h1>Doctors</h1><p>See who is available and where their expertise fits.</p></div></div>
+<div class="module-grid">
+<section class="form-card"><h2>Add doctor</h2><form method="post" class="form-grid">{% csrf_token %}<label>Full name<input name="full_name" required></label><label>Specialization<input name="specialization" required></label><label>Education<input name="education" required></label><div class="form-grid two"><label>Experience (years)<input name="experience" type="number" min="0" required></label><label>Phone<input name="phone"></label></div><label>Email<input name="email" type="email"></label><label><input name="available" type="checkbox" checked> Available for appointments</label><button class="primary-btn" type="submit">Save doctor</button></form></section>
+<section class="data-card"><h2>Clinical team <span class="badge">{{ doctors|length }} doctors</span></h2><div class="table-wrap"><table class="data-table"><thead><tr><th>Doctor</th><th>Specialization</th><th>Experience</th><th>Status</th></tr></thead><tbody>{% for doctor in doctors %}<tr><td><strong>Dr. {{ doctor.full_name }}</strong><br><small>{{ doctor.email|default:"No email" }}</small></td><td>{{ doctor.specialization }}</td><td>{{ doctor.experience }} years</td><td>{% if doctor.available %}<span class="badge">Available</span>{% else %}Unavailable{% endif %}</td></tr>{% empty %}<tr><td colspan="4" class="empty-state">No doctors yet. Add the first doctor from the form.</td></tr>{% endfor %}</tbody></table></div></section>
+</div>
+{% endblock %}

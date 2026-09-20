@@ -1,0 +1,15 @@
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from beds.models import Bed
+from departments.models import Department
+
+
+@login_required
+def overview(request):
+	return render(request, "hospital/overview.html", {
+		"beds": Bed.objects.count(),
+		"available_beds": Bed.objects.filter(status="Available").count(),
+		"departments": Department.objects.filter(status=True),
+	})
+
+# Create your views here.

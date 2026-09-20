@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}medinexusai | Command center{% endblock %}
+{% block section_name %}Command center{% endblock %}
+{% block content %}
+    <div class="dashboard">
+        <section class="hero">
+            <div>
+                <p class="eyebrow">medinexusai / clinical operations</p>
+                <h1>Hospital care, coordinated.</h1>
+                <p class="hero-copy">One live workspace for patients, care teams, beds, appointments, records, and the decisions that keep your hospital moving.</p>
+                <nav class="nav-grid">
+                    <a href="{% url 'patient_list' %}">Patients</a><a href="{% url 'doctor_list' %}">Doctors</a><a href="{% url 'appointment_list' %}">Appointments</a><a href="{% url 'medical_record_list' %}">Records</a><a href="{% url 'analytics_summary' %}">Analytics</a><a href="{% url 'ai_chat' %}">AI assistant</a>
+                </nav>
+            </div>
+            <div class="hero-pulse"><span>Open appointments</span><strong>{{ total_appointments }}</strong><span>across the hospital</span></div>
+        </section>
+
+        <div class="section-heading"><div><h2>Today at a glance</h2><p>The signals worth seeing before the next handoff.</p></div></div>
+        <section class="stats">
+            <article class="stat teal"><span class="stat-label">Patients</span><strong class="stat-value">{{ total_patients }}</strong></article>
+            <article class="stat blue"><span class="stat-label">Doctors</span><strong class="stat-value">{{ total_doctors }}</strong></article>
+            <article class="stat coral"><span class="stat-label">Appointments</span><strong class="stat-value">{{ total_appointments }}</strong></article>
+            <article class="stat teal"><span class="stat-label">Available beds</span><strong class="stat-value">{{ available_beds }}</strong></article>
+            <article class="stat gold"><span class="stat-label">Bills</span><strong class="stat-value">{{ total_bills }}</strong></article>
+            <article class="stat blue"><span class="stat-label">Lab tests</span><strong class="stat-value">{{ total_lab_tests }}</strong></article>
+        </section>
+
+        <section class="voice-panel">
+            <div class="voice-copy"><p class="eyebrow">Hands-free support</p><h2>Ask medinexusai</h2><p>Ask a hospital question or say “book an appointment” to start a guided booking conversation.</p><div class="question-chips"><button type="button" data-question="How many patients are registered?">Patients</button><button type="button" data-question="How many appointments are open?">Appointments</button><button type="button" data-question="How many beds are available?">Beds</button><button type="button" data-question="How many lab tests are there?">Lab tests</button><button type="button" data-question="Book an appointment">Book appointment</button></div></div>
+            <div class="voice-console"><button class="mic-button" id="voiceButton" type="button" aria-label="Ask a voice question" title="Ask a voice question"><span class="mic-icon">●</span><span class="mic-ring"></span></button><p class="voice-status" id="voiceStatus">Ready to listen</p><p class="voice-transcript" id="voiceTranscript">Try: “How many beds are available?”</p><p class="voice-answer" id="voiceAnswer" aria-live="polite"></p></div>
+        </section>
+
+        <section class="content-grid">
+            <div class="panel"><h3>Recent appointments</h3>
+                {% for appointment in recent_appointments %}<div class="appointment"><div><div class="appointment-name">{{ appointment.patient.full_name }}</div><div class="appointment-meta">Dr. {{ appointment.doctor.full_name }} · {{ appointment.appointment_date }} at {{ appointment.appointment_time }}</div></div><span class="badge">{{ appointment.status }}</span></div>{% empty %}<p class="appointment-meta">No appointments have been scheduled yet.</p>{% endfor %}
+            </div>
+            <div class="panel"><h3>Quick actions</h3><div class="actions"><a class="action" href="{% url 'appointment_add' %}"><span>Book appointment</span><span>→</span></a><a class="action" href="{% url 'medical_record_add' %}"><span>Add medical record</span><span>→</span></a><a class="action" href="{% url 'laboratory_list' %}"><span>Request lab test</span><span>→</span></a><a class="action" href="{% url 'pharmacy_overview' %}"><span>Open pharmacy</span><span>→</span></a></div></div>
+        </section>
+    </div>
+    <script>
+        (() => {
+            const panel = document.querySelector('.voice-panel');
+            const button = document.getElementById('voiceButton');
+            const status = document.getElementById('voiceStatus');
+            const transcript = document.getElementById('voiceTranscript');
+            const answer = document.getElementById('voiceAnswer');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            let recognition;
+
+            const ask = async (question) => {
+                transcript.textContent = `Question: “${question}”`;
+                status.textContent = 'Checking live hospital data...';
+                answer.textContent = '';
+                try {
+                    const response = await fetch('{% url "voice_api" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: new URLSearchParams({ question })
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.error || 'Unable to answer');
+                    status.textContent = 'Answer ready';
+                    answer.textContent = result.answer;
+                    if ('speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                        window.speechSynthesis.speak(new SpeechSynthesisUtterance(result.answer));
+                    }
+                } catch (error) {
+                    status.textContent = 'Assistant is unavailable';
+                    answer.textContent = error.message;
+                }
+            };
+
+            document.querySelectorAll('[data-question]').forEach((chip) => chip.addEventListener('click', () => ask(chip.dataset.question)));
+            if (!SpeechRecognition) {
+                status.textContent = 'Voice input is not supported in this browser';
+                button.disabled = true;
+                return;
+            }
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.onstart = () => { button.classList.add('listening'); status.textContent = 'Listening...'; transcript.textContent = 'Speak your question now'; };
+            recognition.onresult = (event) => ask(event.results[0][0].transcript);
+            recognition.onerror = () => { button.classList.remove('listening'); status.textContent = 'Could not hear that. Try again.'; };
+            recognition.onend = () => button.classList.remove('listening');
+            button.addEventListener('click', () => { if (button.classList.contains('listening')) recognition.stop(); else recognition.start(); });
+        })();
+    </script>
+{% endblock %}

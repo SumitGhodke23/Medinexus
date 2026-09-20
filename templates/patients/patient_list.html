@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Patients | MediNexusAI{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">Care directory</p><h1>Patients</h1><p>Keep every patient detail close to the next decision.</p></div></div>
+<div class="module-grid">
+<section class="form-card"><h2>Add patient</h2><form method="post" class="form-grid">{% csrf_token %}<label>Full name<input name="full_name" required></label><div class="form-grid two"><label>Email<input name="email" type="email"></label><label>Phone<input name="phone"></label></div><div class="form-grid two"><label>Date of birth<input name="date_of_birth" type="date"></label><label>Gender<input name="gender"></label></div><div class="form-grid two"><label>Blood group<input name="blood_group"></label><label>Condition<input name="disease"></label></div><label>Address<textarea name="address"></textarea></label><button class="primary-btn" type="submit">Save patient</button></form></section>
+<section class="data-card"><h2>Patient directory <span class="badge">{{ patients|length }} total</span></h2><div class="table-wrap"><table class="data-table"><thead><tr><th>Name</th><th>Contact</th><th>Birth date</th><th>Condition</th></tr></thead><tbody>{% for patient in patients %}<tr><td><strong>{{ patient.full_name }}</strong><br><small>#{{ patient.patient_id }}</small></td><td>{{ patient.phone|default:"-" }}<br>{{ patient.email|default:"-" }}</td><td>{{ patient.date_of_birth|default:"-" }}</td><td>{{ patient.disease|default:"No condition recorded" }}</td></tr>{% empty %}<tr><td colspan="4" class="empty-state">No patients yet. Add the first patient from the form.</td></tr>{% endfor %}</tbody></table></div></section>
+</div>
+{% endblock %}
