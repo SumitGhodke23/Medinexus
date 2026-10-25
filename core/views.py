@@ -23,10 +23,15 @@ def _dashboard_context(request):
     patient = getattr(request.user, "patient_record", None)
     doctor = getattr(request.user, "doctor_record", None)
     appointments = Appointment.objects.all()
+    bills = Bill.objects.all()
+    laboratory_tests = LaboratoryTest.objects.all()
     if role == "patient":
         appointments = appointments.filter(patient=patient) if patient else appointments.none()
+        bills = bills.filter(patient=patient) if patient else bills.none()
+        laboratory_tests = laboratory_tests.filter(patient=patient) if patient else laboratory_tests.none()
     elif role == "doctor":
         appointments = appointments.filter(doctor=doctor) if doctor else appointments.none()
+        laboratory_tests = laboratory_tests.filter(doctor=doctor) if doctor else laboratory_tests.none()
     context = {
         "role": role,
         "total_patients": Patients.objects.filter(user=request.user).count() if role == "patient" else Patients.objects.count(),
@@ -35,13 +40,13 @@ def _dashboard_context(request):
         "available_beds": Bed.objects.filter(
             status="Available"
         ).count(),
-        "total_bills": Bill.objects.count(),
-        "total_lab_tests": LaboratoryTest.objects.count(),
+        "total_bills": bills.count(),
+        "total_lab_tests": laboratory_tests.count(),
         "recent_appointments": appointments.select_related("patient", "doctor").order_by("-appointment_date")[:5],
         "private_records": MedicalRecord.objects.filter(patient=patient).count() if role == "patient" and patient else MedicalRecord.objects.filter(doctor=doctor).count() if role == "doctor" and doctor else MedicalRecord.objects.count(),
         "private_prescriptions": Prescription.objects.filter(patient=patient).count() if role == "patient" and patient else Prescription.objects.filter(doctor=doctor).count() if role == "doctor" and doctor else Prescription.objects.count(),
-        "private_lab_tests": LaboratoryTest.objects.filter(patient=patient).count() if role == "patient" and patient else LaboratoryTest.objects.filter(doctor=doctor).count() if role == "doctor" and doctor else LaboratoryTest.objects.count(),
-        "private_bills": Bill.objects.filter(patient=patient).count() if role == "patient" and patient else Bill.objects.count(),
+        "private_lab_tests": laboratory_tests.count(),
+        "private_bills": bills.count(),
         "unread_notifications": Notification.objects.filter(user=request.user, read_at__isnull=True).count(),
     }
 

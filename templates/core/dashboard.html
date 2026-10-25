@@ -8,6 +8,10 @@
                 <p class="eyebrow">medinexusai / clinical operations</p>
                 <h1>Hospital care, coordinated.</h1>
                 <p class="hero-copy">One live workspace for patients, care teams, beds, appointments, records, and the decisions that keep your hospital moving.</p>
+                <div class="hero-actions">
+                    <a class="dashboard-button dashboard-button-primary" href="{% url 'appointment_add' %}">Book appointment <span aria-hidden="true">→</span></a>
+                    <a class="dashboard-button dashboard-button-secondary" href="{% url 'patient_list' %}">View patients</a>
+                </div>
                 <nav class="nav-grid">
                     <a href="{% url 'patient_list' %}">Patients</a><a href="{% url 'doctor_list' %}">Doctors</a><a href="{% url 'appointment_list' %}">Appointments</a><a href="{% url 'medical_record_list' %}">Records</a><a href="{% url 'analytics_summary' %}">Analytics</a><a href="{% url 'ai_chat' %}">AI assistant</a>
                 </nav>

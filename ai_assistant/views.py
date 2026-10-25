@@ -15,23 +15,43 @@ from accounts.permissions import role_required, user_role
 from accounts.services import notify
 
 
-def answer_question(question):
+def answer_question(question, user):
 	def phrase(count, singular, plural=None):
 		return f"{count} {singular if count == 1 else (plural or singular + 's')}"
 
 	text = question.lower()
+	role = user_role(user)
+	patient = getattr(user, "patient_record", None)
+	doctor = getattr(user, "doctor_record", None)
+	patients = Patients.objects.all()
+	appointments = Appointment.objects.all()
+	bills = Bill.objects.all()
+	laboratory_tests = LaboratoryTest.objects.all()
+	if role == "patient":
+		patients = patients.filter(pk=patient.pk) if patient else patients.none()
+		appointments = appointments.filter(patient=patient) if patient else appointments.none()
+		bills = bills.filter(patient=patient) if patient else bills.none()
+		laboratory_tests = laboratory_tests.filter(patient=patient) if patient else laboratory_tests.none()
+	elif role == "doctor":
+		patients = patients.filter(appointment__doctor=doctor).distinct() if doctor else patients.none()
+		appointments = appointments.filter(doctor=doctor) if doctor else appointments.none()
+		bills = bills.none()
+		laboratory_tests = laboratory_tests.filter(doctor=doctor) if doctor else laboratory_tests.none()
+
 	if "patient" in text:
-		return f"There are {phrase(Patients.objects.count(), 'patient')} registered in medinexusai."
+		return f"There are {phrase(patients.count(), 'patient')} in your care scope."
 	if "doctor" in text or "care team" in text:
 		return f"There are {phrase(Doctor.objects.count(), 'doctor')} in the care team."
 	if "appointment" in text or "schedule" in text:
-		return f"There are {phrase(Appointment.objects.count(), 'appointment')} in the system."
+		return f"There are {phrase(appointments.count(), 'appointment')} in your care scope."
 	if "bed" in text or "capacity" in text:
 		return f"{phrase(Bed.objects.filter(status='Available').count(), 'bed')} currently available."
 	if "bill" in text or "billing" in text:
-		return f"There are {phrase(Bill.objects.count(), 'bill')} recorded."
+		if role == "doctor":
+			return "Billing summaries are available to patients and administrators."
+		return f"There are {phrase(bills.count(), 'bill')} in your care scope."
 	if "lab" in text or "test" in text:
-		return f"There are {phrase(LaboratoryTest.objects.count(), 'laboratory test')} recorded."
+		return f"There are {phrase(laboratory_tests.count(), 'laboratory test')} in your care scope."
 	return "I can answer questions about patients, doctors, appointments, available beds, bills, and lab tests."
 
 
@@ -131,7 +151,7 @@ def appointment_reply(request, message):
 def process_message(request, message):
 	answer, patient_id = appointment_reply(request, message)
 	if answer is None:
-		answer = answer_question(message)
+		answer = answer_question(message, request.user)
 	_save_exchange(message, answer, patient_id)
 	return answer
 
