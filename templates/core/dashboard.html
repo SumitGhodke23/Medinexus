@@ -1,100 +1,1284 @@
 {% extends 'base.html' %}
-{% block title %}medinexusai | Command center{% endblock %}
-{% block section_name %}Command center{% endblock %}
+
+{% block title %}MediNexusAI | Smart Hospital Dashboard{% endblock %}
+{% block section_name %}Command Center{% endblock %}
+
 {% block content %}
-    <div class="dashboard">
-        <section class="hero">
+
+<style>
+/* =========================================
+   MEDINEXUSAI ADVANCED DASHBOARD
+========================================= */
+
+.mn-dashboard {
+    --mn-bg: #f3f7fc;
+    --mn-card: #ffffff;
+    --mn-text: #142d4e;
+    --mn-muted: #718198;
+    --mn-primary: #087f8c;
+    --mn-border: #e4ebf4;
+
+    color: var(--mn-text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    padding: 12px 0 35px;
+}
+
+.mn-dashboard * {
+    box-sizing: border-box;
+}
+
+.mn-dashboard a {
+    text-decoration: none;
+}
+
+.mn-dashboard button,
+.mn-dashboard a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mn-dashboard .mn-muted {
+    color: var(--mn-muted);
+}
+
+.mn-dashboard .mn-eyebrow {
+    color: #36d9ce;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0 0 12px;
+}
+
+/* HERO WITH HOSPITAL BACKGROUND */
+
+.mn-dashboard .mn-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 25px;
+    padding: 38px;
+    min-height: 300px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            100deg,
+            rgba(7, 27, 53, 0.97) 0%,
+            rgba(7, 43, 73, 0.91) 48%,
+            rgba(4, 78, 92, 0.62) 100%
+        ),
+        url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1800&q=85")
+        center / cover no-repeat;
+
+    box-shadow: 0 18px 45px rgba(20, 45, 78, 0.16);
+}
+
+.mn-dashboard .mn-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 650px;
+}
+
+.mn-dashboard .mn-hero h1 {
+    color: white;
+    font-size: clamp(30px, 4vw, 47px);
+    line-height: 1.12;
+    letter-spacing: -1.5px;
+    margin: 0 0 15px;
+    font-weight: 800;
+}
+
+.mn-dashboard .mn-hero-copy {
+    color: #d1deed;
+    font-size: 14px;
+    line-height: 1.9;
+    max-width: 570px;
+    margin-bottom: 23px;
+}
+
+.mn-dashboard .mn-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.mn-dashboard .mn-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 17px;
+    border-radius: 11px;
+    font-size: 13px;
+    font-weight: 750;
+    transition: 0.25s ease;
+    cursor: pointer;
+}
+
+.mn-dashboard .mn-btn:hover {
+    transform: translateY(-3px);
+}
+
+.mn-dashboard .mn-btn-primary {
+    background: #27c9bd;
+    color: #062e45;
+    box-shadow: 0 7px 20px rgba(39, 201, 189, 0.2);
+}
+
+.mn-dashboard .mn-btn-secondary {
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.mn-dashboard .mn-live-card {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 205px;
+    padding: 23px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+}
+
+.mn-dashboard .mn-live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #42e6a4;
+    border-radius: 50%;
+    margin-right: 7px;
+    box-shadow: 0 0 12px #42e6a4;
+}
+
+.mn-dashboard .mn-live-card .mn-small {
+    font-size: 11px;
+    color: #d3e6ef;
+}
+
+.mn-dashboard .mn-live-number {
+    display: block;
+    color: white;
+    font-size: 44px;
+    font-weight: 800;
+    margin: 13px 0 4px;
+}
+
+/* SECTION HEADINGS */
+
+.mn-dashboard .mn-section {
+    margin-top: 30px;
+}
+
+.mn-dashboard .mn-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 17px;
+}
+
+.mn-dashboard .mn-section-heading h2 {
+    font-size: 20px;
+    letter-spacing: -0.4px;
+    margin: 0 0 5px;
+    color: var(--mn-text);
+}
+
+.mn-dashboard .mn-section-heading p {
+    font-size: 12px;
+    margin: 0;
+    color: var(--mn-muted);
+}
+
+/* STATISTICS CARDS */
+
+.mn-dashboard .mn-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.mn-dashboard .mn-stat {
+    background: var(--mn-card);
+    border: 1px solid var(--mn-border);
+    border-radius: 17px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.mn-dashboard .mn-stat:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(24, 55, 89, 0.09);
+}
+
+.mn-dashboard .mn-stat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.mn-dashboard .mn-stat-label {
+    font-size: 12px;
+    color: var(--mn-muted);
+    font-weight: 650;
+}
+
+.mn-dashboard .mn-stat-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    font-size: 20px;
+}
+
+.mn-dashboard .mn-stat-value {
+    display: block;
+    margin-top: 14px;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--mn-text);
+}
+
+.mn-dashboard .mn-stat-footer {
+    font-size: 11px;
+    color: var(--mn-muted);
+    margin-top: 7px;
+}
+
+.mn-dashboard .mn-teal {
+    background: #dff9f5;
+    color: #078477;
+}
+
+.mn-dashboard .mn-blue {
+    background: #e6efff;
+    color: #3568c9;
+}
+
+.mn-dashboard .mn-coral {
+    background: #ffebe8;
+    color: #d65b50;
+}
+
+.mn-dashboard .mn-purple {
+    background: #f0eaff;
+    color: #7955c6;
+}
+
+.mn-dashboard .mn-gold {
+    background: #fff4d8;
+    color: #a97a0d;
+}
+
+.mn-dashboard .mn-green {
+    background: #e3f8e9;
+    color: #25844a;
+}
+
+/* QUICK ACCESS */
+
+.mn-dashboard .mn-shortcuts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.mn-dashboard .mn-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 17px 14px;
+    background: white;
+    border: 1px solid var(--mn-border);
+    border-radius: 15px;
+    color: var(--mn-text);
+    transition: 0.25s;
+}
+
+.mn-dashboard .mn-shortcut:hover {
+    border-color: #76d8d0;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(22, 70, 95, 0.07);
+}
+
+.mn-dashboard .mn-shortcut-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    background: #e6f7f6;
+    color: #087f8c;
+    border-radius: 12px;
+    font-size: 20px;
+}
+
+.mn-dashboard .mn-shortcut strong {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.mn-dashboard .mn-shortcut small {
+    display: block;
+    color: var(--mn-muted);
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* MAIN CONTENT */
+
+.mn-dashboard .mn-content-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+    gap: 18px;
+}
+
+.mn-dashboard .mn-panel {
+    min-width: 0;
+    background: white;
+    border: 1px solid var(--mn-border);
+    border-radius: 19px;
+    padding: 22px;
+}
+
+.mn-dashboard .mn-panel h3 {
+    margin: 0 0 6px;
+    color: var(--mn-text);
+    font-size: 16px;
+}
+
+.mn-dashboard .mn-panel-subtitle {
+    color: var(--mn-muted);
+    font-size: 11px;
+    margin-bottom: 20px;
+}
+
+/* APPOINTMENTS */
+
+.mn-dashboard .mn-appointment {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 0;
+    border-bottom: 1px solid #edf1f6;
+}
+
+.mn-dashboard .mn-appointment:last-child {
+    border-bottom: none;
+}
+
+.mn-dashboard .mn-appointment-name {
+    font-size: 13px;
+    font-weight: 750;
+    margin-bottom: 5px;
+    overflow-wrap: anywhere;
+}
+
+.mn-dashboard .mn-appointment-meta {
+    font-size: 11px;
+    color: var(--mn-muted);
+    line-height: 1.7;
+}
+
+.mn-dashboard .mn-badge {
+    display: inline-block;
+    padding: 6px 9px;
+    background: #e6f8f0;
+    color: #16784b;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+/* ROLE OVERVIEW */
+
+.mn-dashboard .mn-role-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 22px;
+    border-radius: 18px;
+    border: 1px solid #d7ecee;
+    background: linear-gradient(110deg, #e9fbfa, #f3f8ff);
+}
+
+.mn-dashboard .mn-role-card h2 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.mn-dashboard .mn-role-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.mn-dashboard .mn-role-metrics span {
+    font-size: 11px;
+    color: var(--mn-muted);
+}
+
+.mn-dashboard .mn-role-metrics strong {
+    display: block;
+    font-size: 20px;
+    color: var(--mn-primary);
+    margin-bottom: 5px;
+}
+
+/* AI ASSISTANT */
+
+.mn-dashboard .mn-ai-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 0.8fr);
+    gap: 25px;
+    align-items: center;
+    padding: 25px;
+    color: white;
+    border-radius: 21px;
+    background: linear-gradient(120deg, #092846, #075d70);
+    overflow: hidden;
+}
+
+.mn-dashboard .mn-ai-panel h2 {
+    font-size: 23px;
+    margin: 0 0 10px;
+    color: white;
+}
+
+.mn-dashboard .mn-ai-copy {
+    color: #c6dce9;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.mn-dashboard .mn-question-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.mn-dashboard .mn-question-chips button {
+    border: 1px solid rgba(255,255,255,.22);
+    background: rgba(255,255,255,.08);
+    color: white;
+    padding: 9px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: 0.2s;
+}
+
+.mn-dashboard .mn-question-chips button:hover {
+    background: #27c9bd;
+    color: #062e45;
+}
+
+.mn-dashboard .mn-voice-console {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 18px;
+    background: rgba(255,255,255,.06);
+}
+
+.mn-dashboard .mn-mic-button {
+    width: 78px;
+    height: 78px;
+    border: 0;
+    border-radius: 50%;
+    color: #062e45;
+    background: linear-gradient(145deg, #65f0dd, #24b8d0);
+    font-size: 30px;
+    cursor: pointer;
+    box-shadow: 0 0 0 9px rgba(76, 218, 210, .09);
+    transition: 0.25s;
+}
+
+.mn-dashboard .mn-mic-button:hover {
+    transform: scale(1.06);
+}
+
+.mn-dashboard .mn-mic-button.listening {
+    animation: mn-pulse 1.2s infinite;
+}
+
+@keyframes mn-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 8px rgba(76,218,210,.12);
+    }
+    50% {
+        box-shadow: 0 0 0 19px rgba(76,218,210,.03);
+    }
+}
+
+.mn-dashboard .mn-voice-status {
+    color: #72eee0;
+    font-size: 12px;
+    font-weight: 750;
+    margin: 17px 0 8px;
+}
+
+.mn-dashboard .mn-voice-transcript,
+.mn-dashboard .mn-voice-answer {
+    font-size: 12px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+    color: #d7e8f0;
+}
+
+.mn-dashboard .mn-voice-answer {
+    color: white;
+}
+
+.mn-dashboard .mn-voice-language {
+    width: 100%;
+    max-width: 180px;
+    margin-top: 14px;
+    padding: 9px;
+    border-radius: 9px;
+    border: 1px solid rgba(255,255,255,.2);
+    background: #103b54;
+    color: white;
+}
+
+/* ACTION LIST */
+
+.mn-dashboard .mn-actions {
+    display: grid;
+    gap: 10px;
+}
+
+.mn-dashboard .mn-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--mn-border);
+    border-radius: 12px;
+    color: var(--mn-text);
+    font-size: 12px;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.mn-dashboard .mn-action:hover {
+    background: #f0fbfa;
+    border-color: #9bded9;
+    color: var(--mn-primary);
+}
+
+.mn-dashboard .mn-action span:last-child {
+    font-size: 18px;
+}
+
+/* RESPONSIVE LAYOUT */
+
+@media (max-width: 1000px) {
+    .mn-dashboard .mn-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mn-dashboard .mn-shortcuts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mn-dashboard .mn-live-card {
+        width: 170px;
+    }
+}
+
+@media (max-width: 700px) {
+    .mn-dashboard .mn-hero {
+        padding: 25px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .mn-dashboard .mn-live-card {
+        width: 100%;
+    }
+
+    .mn-dashboard .mn-content-grid,
+    .mn-dashboard .mn-ai-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .mn-dashboard .mn-role-card {
+        align-items: flex-start;
+    }
+
+    .mn-dashboard .mn-section-heading h2 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 420px) {
+    .mn-dashboard .mn-stats,
+    .mn-dashboard .mn-shortcuts {
+        grid-template-columns: 1fr;
+    }
+
+    .mn-dashboard .mn-hero h1 {
+        font-size: 30px;
+    }
+
+    .mn-dashboard .mn-panel {
+        padding: 16px;
+    }
+
+    .mn-dashboard .mn-ai-panel {
+        padding: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mn-dashboard *,
+    .mn-dashboard *::before,
+    .mn-dashboard *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+</style>
+
+<div class="mn-dashboard">
+
+    <!-- HERO / BACKGROUND IMAGE -->
+
+    <section class="mn-hero">
+
+        <div class="mn-hero-content">
+
+            <p class="mn-eyebrow">
+                MediNexusAI / Clinical Operations
+            </p>
+
+            <h1>
+                Smarter healthcare.<br>
+                Better patient care.
+            </h1>
+
+            <p class="mn-hero-copy">
+                Welcome to your hospital command center.
+                Manage appointments, doctors, patients, medical
+                records and hospital operations from one workspace.
+            </p>
+
+            <div class="mn-hero-actions">
+
+                <a class="mn-btn mn-btn-primary"
+                   href="{% url 'appointment_add' %}">
+                    + Book appointment
+                </a>
+
+                <a class="mn-btn mn-btn-secondary"
+                   href="{% url 'patient_list' %}">
+                    View patients →
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="mn-live-card">
+
+            <span class="mn-small">
+                <span class="mn-live-dot"></span>
+                Hospital overview
+            </span>
+
+            <strong class="mn-live-number">
+                {{ total_appointments|default:0 }}
+            </strong>
+
+            <span class="mn-small">
+                Total appointments
+            </span>
+
+            <hr style="border-color:rgba(255,255,255,.18);margin:18px 0;">
+
+            <span class="mn-small">
+                Your smart hospital workspace
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- HOSPITAL STATISTICS -->
+
+    <section class="mn-section">
+
+        <div class="mn-section-heading">
             <div>
-                <p class="eyebrow">medinexusai / clinical operations</p>
-                <h1>Hospital care, coordinated.</h1>
-                <p class="hero-copy">One live workspace for patients, care teams, beds, appointments, records, and the decisions that keep your hospital moving.</p>
-                <div class="hero-actions">
-                    <a class="dashboard-button dashboard-button-primary" href="{% url 'appointment_add' %}">Book appointment <span aria-hidden="true">→</span></a>
-                    <a class="dashboard-button dashboard-button-secondary" href="{% url 'patient_list' %}">View patients</a>
+                <h2>Hospital at a glance</h2>
+                <p>Key statistics from your hospital system.</p>
+            </div>
+        </div>
+
+        <div class="mn-stats">
+
+            <article class="mn-stat">
+                <div class="mn-stat-top">
+                    <span class="mn-stat-label">Total patients</span>
+                    <span class="mn-stat-icon mn-teal">♙</span>
                 </div>
-                <nav class="nav-grid">
-                    <a href="{% url 'patient_list' %}">Patients</a><a href="{% url 'doctor_list' %}">Doctors</a><a href="{% url 'appointment_list' %}">Appointments</a><a href="{% url 'medical_record_list' %}">Records</a><a href="{% url 'analytics_summary' %}">Analytics</a><a href="{% url 'ai_chat' %}">AI assistant</a>
-                </nav>
+                <strong class="mn-stat-value">
+                    {{ total_patients|default:0 }}
+                </strong>
+                <p class="mn-stat-footer">Registered patients</p>
+            </article>
+
+            <article class="mn-stat">
+                <div class="mn-stat-top">
+                    <span class="mn-stat-label">Medical team</span>
+                    <span class="mn-stat-icon mn-blue">⚕</span>
+                </div>
+                <strong class="mn-stat-value">
+                    {{ total_doctors|default:0 }}
+                </strong>
+                <p class="mn-stat-footer">Registered doctors</p>
+            </article>
+
+            <article class="mn-stat">
+                <div class="mn-stat-top">
+                    <span class="mn-stat-label">Appointments</span>
+                    <span class="mn-stat-icon mn-coral">▦</span>
+                </div>
+                <strong class="mn-stat-value">
+                    {{ total_appointments|default:0 }}
+                </strong>
+                <p class="mn-stat-footer">Hospital appointments</p>
+            </article>
+
+            <article class="mn-stat">
+                <div class="mn-stat-top">
+                    <span class="mn-stat-label">Available beds</span>
+                    <span class="mn-stat-icon mn-green">▰</span>
+                </div>
+                <strong class="mn-stat-value">
+                    {{ available_beds|default:0 }}
+                </strong>
+                <p class="mn-stat-footer">Beds reported available</p>
+            </article>
+
+            <article class="mn-stat">
+                <div class="mn-stat-top">
+                    <span class="mn-stat-label">Hospital bills</span>
+                    <span class="mn-stat-icon mn-gold">₹</span>
+                </div>
+                <strong class="mn-stat-value">
+                    {{ total_bills|default:0 }}
+                </strong>
+                <p class="mn-stat-footer">Bill records</p>
+            </article>
+
+            <article class="mn-stat">
+                <div class="mn-stat-top">
+                    <span class="mn-stat-label">Laboratory</span>
+                    <span class="mn-stat-icon mn-purple">⚗</span>
+                </div>
+                <strong class="mn-stat-value">
+                    {{ total_lab_tests|default:0 }}
+                </strong>
+                <p class="mn-stat-footer">Laboratory test records</p>
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- QUICK ACCESS -->
+
+    <section class="mn-section">
+
+        <div class="mn-section-heading">
+            <div>
+                <h2>Quick access</h2>
+                <p>Open important hospital modules with one click.</p>
             </div>
-            <div class="hero-pulse"><span>Open appointments</span><strong>{{ total_appointments }}</strong><span>across the hospital</span></div>
-        </section>
+        </div>
 
-        <div class="section-heading"><div><h2>Today at a glance</h2><p>The signals worth seeing before the next handoff.</p></div></div>
-        <section class="stats">
-            <article class="stat teal"><span class="stat-label">Patients</span><strong class="stat-value">{{ total_patients }}</strong></article>
-            <article class="stat blue"><span class="stat-label">Doctors</span><strong class="stat-value">{{ total_doctors }}</strong></article>
-            <article class="stat coral"><span class="stat-label">Appointments</span><strong class="stat-value">{{ total_appointments }}</strong></article>
-            <article class="stat teal"><span class="stat-label">Available beds</span><strong class="stat-value">{{ available_beds }}</strong></article>
-            <article class="stat gold"><span class="stat-label">Bills</span><strong class="stat-value">{{ total_bills }}</strong></article>
-            <article class="stat blue"><span class="stat-label">Lab tests</span><strong class="stat-value">{{ total_lab_tests }}</strong></article>
-        </section>
+        <div class="mn-shortcuts">
 
-        <section class="role-overview"><div><p class="eyebrow">{% if role == 'patient' %}Your care{% elif role == 'doctor' %}Assigned care{% else %}Hospital management{% endif %}</p><h2>{% if role == 'patient' %}Your private care overview{% elif role == 'doctor' %}Your clinical workspace{% else %}Management overview{% endif %}</h2></div><div class="role-metrics"><span><strong>{{ private_records }}</strong> records</span><span><strong>{{ private_prescriptions }}</strong> prescriptions</span><span><strong>{{ private_lab_tests }}</strong> lab tests</span>{% if role == 'patient' %}<span><strong>{{ private_bills }}</strong> bills</span>{% endif %}<span><strong>{{ unread_notifications }}</strong> unread</span></div></section>
+            <a class="mn-shortcut"
+               href="{% url 'patient_list' %}">
+                <span class="mn-shortcut-icon">♙</span>
+                <span>
+                    <strong>Patients</strong>
+                    <small>Patient information</small>
+                </span>
+            </a>
 
-        <section class="voice-panel">
-            <div class="voice-copy"><p class="eyebrow">Hands-free support</p><h2>Ask medinexusai</h2><p>Ask a hospital question or say “book an appointment” to start a guided booking conversation.</p><div class="question-chips"><button type="button" data-question="How many patients are registered?">Patients</button><button type="button" data-question="How many appointments are open?">Appointments</button><button type="button" data-question="How many beds are available?">Beds</button><button type="button" data-question="How many lab tests are there?">Lab tests</button><button type="button" data-question="Book an appointment">Book appointment</button></div></div>
-            <div class="voice-console"><button class="mic-button" id="voiceButton" type="button" aria-label="Ask a voice question" title="Ask a voice question"><span class="mic-icon">●</span><span class="mic-ring"></span></button><p class="voice-status" id="voiceStatus">Ready to listen</p><p class="voice-transcript" id="voiceTranscript">Try: “How many beds are available?”</p><p class="voice-answer" id="voiceAnswer" aria-live="polite"></p></div>
-        </section>
+            <a class="mn-shortcut"
+               href="{% url 'doctor_list' %}">
+                <span class="mn-shortcut-icon">⚕</span>
+                <span>
+                    <strong>Doctors</strong>
+                    <small>Medical team</small>
+                </span>
+            </a>
 
-        <section class="content-grid">
-            <div class="panel"><h3>Recent appointments</h3>
-                {% for appointment in recent_appointments %}<div class="appointment"><div><div class="appointment-name">{{ appointment.patient.full_name }}</div><div class="appointment-meta">Dr. {{ appointment.doctor.full_name }} · {{ appointment.appointment_date }} at {{ appointment.appointment_time }}</div></div><span class="badge">{{ appointment.status }}</span></div>{% empty %}<p class="appointment-meta">No appointments have been scheduled yet.</p>{% endfor %}
+            <a class="mn-shortcut"
+               href="{% url 'appointment_list' %}">
+                <span class="mn-shortcut-icon">▦</span>
+                <span>
+                    <strong>Appointments</strong>
+                    <small>Booking and schedules</small>
+                </span>
+            </a>
+
+            <a class="mn-shortcut"
+               href="{% url 'medical_record_list' %}">
+                <span class="mn-shortcut-icon">▤</span>
+                <span>
+                    <strong>Medical records</strong>
+                    <small>Authorized patient records</small>
+                </span>
+            </a>
+
+            <a class="mn-shortcut"
+               href="{% url 'analytics_summary' %}">
+                <span class="mn-shortcut-icon">▥</span>
+                <span>
+                    <strong>Analytics</strong>
+                    <small>Hospital statistics</small>
+                </span>
+            </a>
+
+            <a class="mn-shortcut"
+               href="{% url 'laboratory_list' %}">
+                <span class="mn-shortcut-icon">⚗</span>
+                <span>
+                    <strong>Laboratory</strong>
+                    <small>Laboratory services</small>
+                </span>
+            </a>
+
+            <a class="mn-shortcut"
+               href="{% url 'pharmacy_overview' %}">
+                <span class="mn-shortcut-icon">✚</span>
+                <span>
+                    <strong>Pharmacy</strong>
+                    <small>Medicine management</small>
+                </span>
+            </a>
+
+            <a class="mn-shortcut"
+               href="{% url 'ai_chat' %}">
+                <span class="mn-shortcut-icon">✧</span>
+                <span>
+                    <strong>AI assistant</strong>
+                    <small>Open AI chat</small>
+                </span>
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ROLE-SPECIFIC OVERVIEW -->
+
+    <section class="mn-section mn-role-card">
+
+        <div>
+            <p class="mn-eyebrow" style="color:#078477;">
+                Personalized workspace
+            </p>
+
+            <h2>
+                {% if role == 'patient' %}
+                    Your private care overview
+                {% elif role == 'doctor' %}
+                    Your clinical workspace
+                {% else %}
+                    Hospital management overview
+                {% endif %}
+            </h2>
+        </div>
+
+        <div class="mn-role-metrics">
+
+            <span>
+                <strong>{{ private_records|default:0 }}</strong>
+                Medical records
+            </span>
+
+            <span>
+                <strong>{{ private_prescriptions|default:0 }}</strong>
+                Prescriptions
+            </span>
+
+            <span>
+                <strong>{{ private_lab_tests|default:0 }}</strong>
+                Lab tests
+            </span>
+
+            {% if role == 'patient' %}
+            <span>
+                <strong>{{ private_bills|default:0 }}</strong>
+                Your bills
+            </span>
+            {% endif %}
+
+            <span>
+                <strong>{{ unread_notifications|default:0 }}</strong>
+                Unread notifications
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- AI VOICE ASSISTANT -->
+
+    <section class="mn-section">
+
+        <div class="mn-section-heading">
+            <div>
+                <h2>AI hospital assistant</h2>
+                <p>Ask questions about available hospital information.</p>
             </div>
-            <div class="panel"><h3>Quick actions</h3><div class="actions"><a class="action" href="{% url 'appointment_add' %}"><span>Book appointment</span><span>→</span></a><a class="action" href="{% url 'medical_record_add' %}"><span>Add medical record</span><span>→</span></a><a class="action" href="{% url 'laboratory_list' %}"><span>Request lab test</span><span>→</span></a><a class="action" href="{% url 'pharmacy_overview' %}"><span>Open pharmacy</span><span>→</span></a></div></div>
-        </section>
-    </div>
-    <script>
-        (() => {
-            const panel = document.querySelector('.voice-panel');
-            const button = document.getElementById('voiceButton');
-            const status = document.getElementById('voiceStatus');
-            const transcript = document.getElementById('voiceTranscript');
-            const answer = document.getElementById('voiceAnswer');
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            let recognition;
+        </div>
 
-            const ask = async (question) => {
-                transcript.textContent = `Question: “${question}”`;
-                status.textContent = 'Checking live hospital data...';
-                answer.textContent = '';
-                try {
-                    const response = await fetch('{% url "voice_api" %}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: new URLSearchParams({ question })
-                    });
-                    const result = await response.json();
-                    if (!response.ok) throw new Error(result.error || 'Unable to answer');
-                    status.textContent = 'Answer ready';
-                    answer.textContent = result.answer;
-                    if ('speechSynthesis' in window) {
-                        window.speechSynthesis.cancel();
-                        window.speechSynthesis.speak(new SpeechSynthesisUtterance(result.answer));
-                    }
-                } catch (error) {
-                    status.textContent = 'Assistant is unavailable';
-                    answer.textContent = error.message;
+        <div class="mn-ai-panel">
+
+            <div>
+
+                <p class="mn-eyebrow">Your smart healthcare companion</p>
+
+                <h2>Meet your AI assistant</h2>
+
+                <p class="mn-ai-copy">
+                    Ask about registered patients, appointments,
+                    available beds or laboratory tests. Use the
+                    microphone where supported, or select a question.
+                </p>
+
+                <div class="mn-question-chips">
+
+                    <button type="button"
+                            data-question="How many patients are registered?">
+                        ♙ Patients
+                    </button>
+
+                    <button type="button"
+                            data-question="How many appointments are open?">
+                        ▦ Appointments
+                    </button>
+
+                    <button type="button"
+                            data-question="How many beds are available?">
+                        ▰ Available beds
+                    </button>
+
+                    <button type="button"
+                            data-question="How many lab tests are there?">
+                        ⚗ Lab tests
+                    </button>
+
+                    <button type="button"
+                            data-question="Book an appointment">
+                        + Book appointment
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="mn-voice-console">
+
+                <button
+                    class="mn-mic-button"
+                    id="voiceButton"
+                    type="button"
+                    aria-label="Ask a voice question"
+                    title="Ask a voice question">
+                    🎙
+                </button>
+
+                <p class="mn-voice-status" id="voiceStatus">
+                    Ready to listen
+                </p>
+
+                <p class="mn-voice-transcript" id="voiceTranscript">
+                    Select a question or press the microphone.
+                </p>
+
+                <p class="mn-voice-answer"
+                   id="voiceAnswer"
+                   aria-live="polite"></p>
+
+                <label for="voiceLanguage"
+                       class="mn-voice-transcript">
+                    Voice language
+                </label>
+
+                <select id="voiceLanguage" class="mn-voice-language">
+                    <option value="en-US">English</option>
+                    <option value="hi-IN">Hindi</option>
+                    <option value="mr-IN">Marathi</option>
+                </select>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RECENT APPOINTMENTS AND QUICK ACTIONS -->
+
+    <section class="mn-section mn-content-grid">
+
+        <div class="mn-panel">
+
+            <h3>Recent appointments</h3>
+
+            <p class="mn-panel-subtitle">
+                Latest appointments available to your account.
+            </p>
+
+            {% for appointment in recent_appointments %}
+
+                <div class="mn-appointment">
+
+                    <div>
+                        <div class="mn-appointment-name">
+                            {{ appointment.patient.full_name }}
+                        </div>
+
+                        <div class="mn-appointment-meta">
+                            Dr. {{ appointment.doctor.full_name }}<br>
+                            {{ appointment.appointment_date }}
+                            at
+                            {{ appointment.appointment_time }}
+                        </div>
+                    </div>
+
+                    <span class="mn-badge">
+                        {{ appointment.status }}
+                    </span>
+
+                </div>
+
+            {% empty %}
+
+                <p class="mn-appointment-meta">
+                    No appointments have been scheduled yet.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+
+        <div class="mn-panel">
+
+            <h3>Quick actions</h3>
+
+            <p class="mn-panel-subtitle">
+                Common tasks for your hospital workflow.
+            </p>
+
+            <div class="mn-actions">
+
+                <a class="mn-action"
+                   href="{% url 'appointment_add' %}">
+                    <span>+ Book an appointment</span>
+                    <span>→</span>
+                </a>
+
+                <a class="mn-action"
+                   href="{% url 'medical_record_add' %}">
+                    <span>▤ Add medical record</span>
+                    <span>→</span>
+                </a>
+
+                <a class="mn-action"
+                   href="{% url 'laboratory_list' %}">
+                    <span>⚗ Open laboratory</span>
+                    <span>→</span>
+                </a>
+
+                <a class="mn-action"
+                   href="{% url 'pharmacy_overview' %}">
+                    <span>✚ Open pharmacy</span>
+                    <span>→</span>
+                </a>
+
+                <a class="mn-action"
+                   href="{% url 'ai_chat' %}">
+                    <span>✧ Chat with AI assistant</span>
+                    <span>→</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- VOICE ASSISTANT JAVASCRIPT -->
+
+<script>
+(() => {
+    const button = document.getElementById('voiceButton');
+    const status = document.getElementById('voiceStatus');
+    const transcript = document.getElementById('voiceTranscript');
+    const answer = document.getElementById('voiceAnswer');
+    const language = document.getElementById('voiceLanguage');
+
+    if (!button || !status || !transcript || !answer) {
+        return;
+    }
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    let recognition = null;
+
+    async function ask(question) {
+        transcript.textContent = `Question: "${question}"`;
+        status.textContent = 'Checking hospital information...';
+        answer.textContent = '';
+
+        try {
+            const response = await fetch(
+                '{% url "voice_api" %}',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type':
+                            'application/x-www-form-urlencoded',
+                        'X-CSRFToken':
+                            '{{ csrf_token }}'
+                    },
+                    body: new URLSearchParams({
+                        question: question
+                    })
                 }
-            };
+            );
 
-            document.querySelectorAll('[data-question]').forEach((chip) => chip.addEventListener('click', () => ask(chip.dataset.question)));
-            if (!SpeechRecognition) {
-                status.textContent = 'Voice input is not supported in this browser';
-                button.disabled = true;
-                return;
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error || 'Unable to answer this question.'
+                );
             }
-            recognition = new SpeechRecognition();
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-            recognition.onstart = () => { button.classList.add('listening'); status.textContent = 'Listening...'; transcript.textContent = 'Speak your question now'; };
-            recognition.onresult = (event) => ask(event.results[0][0].transcript);
-            recognition.onerror = () => { button.classList.remove('listening'); status.textContent = 'Could not hear that. Try again.'; };
-            recognition.onend = () => button.classList.remove('listening');
-            button.addEventListener('click', () => { if (button.classList.contains('listening')) recognition.stop(); else recognition.start(); });
-        })();
-    </script>
+
+            status.textContent = 'Answer ready';
+            answer.textContent = result.answer;
+
+            if ('speechSynthesis' in window && result.answer) {
+                window.speechSynthesis.cancel();
+
+                const speech =
+                    new SpeechSynthesisUtterance(result.answer);
+
+                speech.lang = language.value;
+                window.speechSynthesis.speak(speech);
+            }
+
+        } catch (error) {
+            status.textContent = 'Assistant unavailable';
+            answer.textContent =
+                error.message || 'Please try again later.';
+        }
+    }
+
+    document.querySelectorAll(
+        '.mn-dashboard [data-question]'
+    ).forEach((chip) => {
+        chip.addEventListener('click', () => {
+            ask(chip.dataset.question);
+        });
+    });
+
+    if (!SpeechRecognition) {
+        status.textContent =
+            'Voice input is not supported in this browser.';
+
+        button.disabled = true;
+        button.style.opacity = '0.5';
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = language.value;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    language.addEventListener('change', () => {
+        if (recognition) {
+            recognition.lang = language.value;
+        }
+    });
+
+    recognition.onstart = () => {
+        button.classList.add('listening');
+        status.textContent = 'Listening...';
+        transcript.textContent = 'Speak your question now.';
+    };
+
+    recognition.onresult = (event) => {
+        const question = event.results[0][0].transcript;
+        ask(question);
+    };
+
+    recognition.onerror = (event) => {
+        button.classList.remove('listening');
+        status.textContent = 'Could not hear that. Try again.';
+    };
+
+    recognition.onend = () => {
+        button.classList.remove('listening');
+    };
+
+    button.addEventListener('click', () => {
+        try {
+            if (button.classList.contains('listening')) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        } catch (error) {
+            status.textContent =
+                'Please wait a moment and try again.';
+        }
+    });
+})();
+</script>
+
 {% endblock %}
