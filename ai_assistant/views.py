@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import datetime
 
@@ -19,35 +20,50 @@ from .models import ChatMessage
 
 
 def ask_ollama(question):
-    """Generate a general answer using the locally running Ollama model."""
+    """Generate an answer using a configurable Ollama API endpoint."""
+
+    api_url = os.environ.get(
+        "OLLAMA_API_URL",
+        "http://localhost:11434/api/generate",
+    )
+
+    model = os.environ.get("OLLAMA_MODEL", "llama3.2:1b")
+
+    prompt = (
+        "You are MediNexusAI, a hospital information assistant. "
+        "Answer in simple English and keep answers concise. "
+        "Do not invent patient records, appointments, doctors, "
+        "medical results, or hospital statistics. "
+        "Do not diagnose patients or replace a qualified doctor. "
+        "For emergencies, tell the user to contact local emergency "
+        "services or hospital staff immediately. "
+        "For general health questions, provide general educational "
+        "information and recommend professional medical advice when appropriate.\n\n"
+        f"User question: {question}"
+    )
+
     try:
         response = requests.post(
-            "http://localhost:11434/api/generate",
+            api_url,
             json={
-                "model": "llama3.2:1b",
-                "prompt": (
-                    "You are MediNexusAI, a hospital information assistant. "
-                    "Answer in simple English and keep answers concise. "
-                    "Do not invent patient records, appointments, doctors, "
-                    "medical results, or hospital statistics. "
-                    "Do not diagnose patients or replace a qualified doctor. "
-                    "For emergencies, tell the user to contact local emergency "
-                    "services or hospital staff immediately.\n\n"
-                    f"User question: {question}"
-                ),
+                "model": model,
+                "prompt": prompt,
                 "stream": False,
             },
             timeout=90,
         )
+
         response.raise_for_status()
         data = response.json()
+
         answer = data.get("response", "").strip()
+
         return answer or "Sorry, I could not generate an answer."
 
     except requests.RequestException:
         return (
             "The AI service is currently unavailable. "
-            "Please make sure Ollama is running on the same computer as Django."
+            "Please check the AI service configuration and try again."
         )
 
 
