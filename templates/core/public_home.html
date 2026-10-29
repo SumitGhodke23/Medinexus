@@ -1,1244 +1,1178 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}MediNexusAI | Smart Healthcare{% endblock %}
-
-{% block content %}
-
 <style>
-
 :root {
-    --primary: #00d9d0;
-    --secondary: #087cf0;
-    --dark: #061b2b;
-    --text: #102a43;
-    --muted: #64748b;
-    --white: #ffffff;
+    --mn-ink:#071b2c;
+    --mn-ink2:#0a2d43;
+    --mn-teal:#00dfcf;
+    --mn-blue:#1887ff;
+    --mn-text:#122b40;
+    --mn-muted:#647b8e;
+    --mn-bg:#f3f8fc;
+    --mn-white:#fff;
+    --mn-border:rgba(14,55,79,.12);
+    --mn-shadow:0 24px 70px rgba(4,32,52,.16);
 }
-
+.homepage,.homepage * {
+    box-sizing:border-box
+}
 .homepage {
-    font-family: "Inter", "Segoe UI", sans-serif;
-    color: var(--text);
-    overflow: hidden;
-    background: #f5f9fc;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    color:var(--mn-text);
+    background:var(--mn-bg);
+    overflow:hidden
 }
-
-.homepage * {
-    box-sizing: border-box;
+.homepage a {
+    color:inherit
 }
-
-.home-container {
-    width: min(1250px, 92%);
-    margin: auto;
+.mn-container {
+    width:min(1220px,92%);
+    margin-inline:auto
 }
-
-/* NAVIGATION */
-
-.home-nav {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 20;
-    border-bottom: 1px solid rgba(255,255,255,.13);
-    background: rgba(3, 22, 37, .72);
-    backdrop-filter: blur(16px);
+.mn-nav {
+    position:absolute;
+    inset:0 0 auto;
+    z-index:30;
+    color:#fff;
+    border-bottom:1px solid rgba(255,255,255,.13);
+    background:rgba(3,20,34,.68);
+    backdrop-filter:blur(18px)
 }
-
-.nav-inner {
-    min-height: 78px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
+.mn-nav-inner {
+    min-height:76px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:22px
 }
-
-.home-logo {
-    color: white;
-    text-decoration: none;
-    font-size: 25px;
-    font-weight: 800;
-    letter-spacing: -.8px;
+.mn-brand {
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    color:#fff!important;
+    text-decoration:none;
+    font-size:23px;
+    font-weight:850;
+    letter-spacing:-.8px;
+    white-space:nowrap
 }
-
-.home-logo span {
-    color: var(--primary);
+.mn-brand-mark {
+    display:grid;
+    place-items:center;
+    width:37px;
+    height:37px;
+    border-radius:12px;
+    color:#032a39;
+    background:linear-gradient(135deg,var(--mn-teal),#85fff2);
+    box-shadow:0 0 26px #00dfcf44;
+    font-size:22px
 }
-
-.logo-icon {
-    color: var(--primary);
-    font-size: 29px;
-    margin-right: 8px;
+.mn-brand span:last-child {
+    color:var(--mn-teal)
 }
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 30px;
+.mn-nav-links {
+    display:flex;
+    align-items:center;
+    gap:26px
 }
-
-.nav-links a {
-    text-decoration: none;
-    color: #e1edf7;
-    font-size: 14px;
-    transition: .3s;
+.mn-nav-links a {
+    color:#d8e8f2;
+    text-decoration:none;
+    font-size:13px;
+    transition:color .25s
 }
-
-.nav-links a:hover {
-    color: var(--primary);
+.mn-nav-links a:hover {
+    color:var(--mn-teal)
 }
-
-.nav-login {
-    background: linear-gradient(120deg, #00bdb7, #087cf0);
-    color: white !important;
-    padding: 12px 21px;
-    border-radius: 30px;
-    font-weight: 700;
-    box-shadow: 0 8px 25px rgba(0, 217, 208, .15);
+.mn-nav-cta,.mn-btn {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    border:0;
+    border-radius:999px;
+    padding:13px 20px;
+    font-weight:800;
+    text-decoration:none;
+    cursor:pointer;
+    transition:transform .25s,box-shadow .25s,background .25s
 }
-
-/* HERO */
-
-.hero {
-    position: relative;
-    min-height: 730px;
-    display: flex;
-    align-items: center;
-    color: white;
-    background:
-        linear-gradient(90deg,
-            rgba(3, 19, 32, .97) 0%,
-            rgba(3, 27, 43, .89) 38%,
-            rgba(3, 27, 43, .42) 75%,
-            rgba(3, 27, 43, .25) 100%),
-        url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=2200&q=90")
-        center/cover no-repeat;
+.mn-nav-cta,.mn-btn-primary {
+    color:#042936!important;
+    background:linear-gradient(120deg,#00e8d4,#8cfff2);
+    box-shadow:0 10px 28px #00dfcf2b
 }
-
-.hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 75% 35%,
-            rgba(0, 217, 208, .13), transparent 35%);
-    pointer-events: none;
+.mn-nav-cta:hover,.mn-btn:hover {
+    transform:translateY(-3px);
+    box-shadow:0 15px 35px #001b2c2b
 }
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-    padding-top: 95px;
-    padding-bottom: 70px;
+.mn-hero {
+    position:relative;
+    isolation:isolate;
+    color:#fff;
+    background:linear-gradient(100deg,rgba(3,19,32,.98) 0%,rgba(3,31,49,.93) 47%,rgba(3,31,49,.72) 100%),url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=2200&q=85") center/cover no-repeat
 }
-
-.hero-grid {
-    display: grid;
-    grid-template-columns: 1.2fr .8fr;
-    align-items: center;
-    gap: 45px;
+.mn-hero:before,.mn-hero:after {
+    content:"";
+    position:absolute;
+    z-index:-1;
+    border-radius:50%;
+    pointer-events:none;
+    filter:blur(2px)
 }
-
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    color: #80fff4;
-    background: rgba(0, 217, 208, .12);
-    border: 1px solid rgba(0, 217, 208, .3);
-    border-radius: 40px;
-    padding: 10px 17px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    animation: fadeUp .8s ease both;
+.mn-hero:before {
+    width:480px;
+    height:480px;
+    right:-140px;
+    top:90px;
+    background:radial-gradient(circle,#00dfcf2a,transparent 68%);
+    animation:mnGlow 8s ease-in-out infinite alternate
 }
-
-.hero h1 {
-    max-width: 750px;
-    margin: 25px 0;
-    color: white;
-    font-size: clamp(42px, 5.1vw, 70px);
-    font-weight: 850;
-    line-height: 1.08;
-    letter-spacing: -2.6px;
-    animation: fadeUp .9s ease .12s both;
+.mn-hero:after {
+    width:330px;
+    height:330px;
+    left:-150px;
+    bottom:-120px;
+    background:radial-gradient(circle,#1887ff28,transparent 68%);
+    animation:mnGlow 9s ease-in-out infinite alternate-reverse
 }
-
-.hero h1 span {
-    color: var(--primary);
-    text-shadow: 0 0 35px rgba(0, 217, 208, .2);
+.mn-hero-inner {
+    padding:135px 0 76px
 }
-
-.hero-description {
-    max-width: 590px;
-    color: #d2e0eb;
-    font-size: 17px;
-    line-height: 1.9;
-    animation: fadeUp 1s ease .22s both;
+.mn-hero-grid {
+    display:grid;
+    grid-template-columns:minmax(0,1.04fr) minmax(350px,.86fr);
+    align-items:center;
+    gap:54px
 }
-
-.hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 30px;
-    animation: fadeUp 1s ease .32s both;
+.mn-eyebrow {
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    padding:9px 14px;
+    border:1px solid #00dfcf55;
+    border-radius:999px;
+    background:#00dfcf13;
+    color:#8cfff2;
+    font-size:11px;
+    font-weight:850;
+    letter-spacing:1.3px;
+    text-transform:uppercase;
+    animation:mnUp .7s both
 }
-
-.btn-primary,
-.btn-outline {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 16px 23px;
-    border-radius: 40px;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 750;
-    transition: transform .3s, box-shadow .3s;
+.mn-live-dot {
+    width:8px;
+    height:8px;
+    background:#47f6ac;
+    border-radius:50%;
+    box-shadow:0 0 0 5px #47f6ac20;
+    animation:mnPulse 1.7s infinite
 }
-
-.btn-primary {
-    color: #03212d;
-    background: linear-gradient(120deg, #00f0dc, #66fff0);
-    box-shadow: 0 10px 35px rgba(0, 217, 208, .2);
+.mn-hero h1 {
+    max-width:700px;
+    margin:24px 0 18px;
+    font-size:clamp(39px,5.1vw,68px);
+    line-height:1.06;
+    letter-spacing:-2.8px;
+    color:#fff;
+    font-weight:900;
+    animation:mnUp .8s .08s both
 }
-
-.btn-outline {
-    color: white;
-    border: 1px solid rgba(255,255,255,.45);
-    background: rgba(255,255,255,.05);
+.mn-hero h1 em {
+    font-style:normal;
+    color:var(--mn-teal);
+    text-shadow:0 0 36px #00dfcf2d
 }
-
-.btn-primary:hover,
-.btn-outline:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 15px 35px rgba(0,0,0,.2);
+.mn-hero-copy {
+    max-width:610px;
+    color:#d0e0ea;
+    font-size:16px;
+    line-height:1.85;
+    animation:mnUp .8s .16s both
 }
-
-.hero-trust {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
-    margin-top: 48px;
+.mn-hero-actions {
+    display:flex;
+    flex-wrap:wrap;
+    gap:13px;
+    margin-top:26px;
+    animation:mnUp .8s .24s both
 }
-
-.trust-item {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    min-width: 115px;
+.mn-btn {
+    font-size:13px;
+    padding:15px 21px
 }
-
-.trust-icon {
-    font-size: 25px;
+.mn-btn-ghost {
+    color:#fff!important;
+    background:#ffffff0c;
+    border:1px solid #ffffff48
 }
-
-.trust-item strong {
-    font-size: 13px;
+.mn-btn-ghost:hover {
+    background:#ffffff18
 }
-
-.trust-item small {
-    color: #b4c7d6;
-    font-size: 12px;
+.mn-trust-row {
+    display:flex;
+    flex-wrap:wrap;
+    gap:22px;
+    margin-top:34px;
+    animation:mnUp .8s .32s both
 }
-
-/* FLOATING INFORMATION CARD */
-
-.hero-visual {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 390px;
-    position: relative;
+.mn-trust {
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#d7e5ee;
+    font-size:12px
 }
-
-.floating-card {
-    width: min(100%, 390px);
-    padding: 28px;
-    border: 1px solid rgba(255,255,255,.22);
-    border-radius: 25px;
-    background: rgba(3, 31, 48, .69);
-    backdrop-filter: blur(18px);
-    box-shadow: 0 30px 90px rgba(0,0,0,.3);
-    animation: floatCard 5s ease-in-out infinite;
+.mn-trust-icon {
+    display:grid;
+    place-items:center;
+    width:32px;
+    height:32px;
+    border-radius:11px;
+    background:#ffffff12;
+    font-size:16px
 }
-
-.card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 25px;
+.mn-login-wrap {
+    position:relative;
+    max-width:480px;
+    width:100%;
+    justify-self:end;
+    animation:mnLoginIn .9s .15s both
 }
-
-.card-top strong {
-    font-size: 17px;
+.mn-login-glow {
+    position:absolute;
+    inset:-18px;
+    border-radius:36px;
+    background:linear-gradient(135deg,#00dfcf55,#1887ff35);
+    filter:blur(24px);
+    opacity:.8;
+    animation:mnGlow 5s ease-in-out infinite alternate
 }
-
-.live-status {
-    color: #67ffbc;
-    font-size: 11px;
+.mn-login-card {
+    position:relative;
+    padding:27px;
+    border:1px solid #ffffff2b;
+    border-radius:27px;
+    background:linear-gradient(145deg,#082b40ed,#061a2bf2);
+    box-shadow:0 30px 90px #0005;
+    backdrop-filter:blur(20px);
+    overflow:hidden
 }
-
-.live-status::before {
-    content: "";
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    background: #36f4a1;
-    border-radius: 50%;
-    margin-right: 6px;
-    animation: pulse 1.5s infinite;
+.mn-login-card:before {
+    content:"";
+    position:absolute;
+    top:0;
+    left:12%;
+    right:12%;
+    height:1px;
+    background:linear-gradient(90deg,transparent,#8cfff2,transparent)
 }
-
-.stat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+.mn-login-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:20px
 }
-
-.stat-box {
-    padding: 17px 10px;
-    border-radius: 15px;
+.mn-login-head h2 {
+    margin:0;
+    color:#fff;
+    font-size:23px;
+    letter-spacing:-.7px
+}
+.mn-login-head p {
+    margin:7px 0 0;
+    color:#a9c2d2;
+    font-size:12px;
+    line-height:1.6
+}
+.mn-secure-badge {
+    flex-shrink:0;
+    border:1px solid #47f6ac42;
+    border-radius:999px;
+    padding:7px 9px;
+    color:#70f5bb;
+    background:#47f6ac0d;
+    font-size:10px;
+    font-weight:800
+}
+.mn-role-label {
+    display:block;
+    margin:18px 0 10px;
+    color:#d8e8f2;
+    font-size:11px;
+    font-weight:850;
+    letter-spacing:1px;
+    text-transform:uppercase
+}
+.mn-role-grid {
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:8px
+}
+.mn-role {
+    position:relative;
+    min-width:0;
+    padding:12px 5px 10px;
+    border:1px solid #ffffff1c;
+    border-radius:14px;
+    color:#c7d9e5;
+    background:#ffffff08;
+    text-align:center;
+    cursor:pointer;
+    transition:transform .25s,border-color .25s,background .25s,box-shadow .25s
+}
+.mn-role:hover {
+    transform:translateY(-3px);
+    border-color:#00dfcf88
+}
+.mn-role[aria-pressed="true"] {
+    border-color:#00dfcf;
+    background:linear-gradient(145deg,#00dfcf25,#1887ff18);
+    color:#fff;
+    box-shadow:inset 0 0 0 1px #00dfcf24,0 0 22px #00dfcf13
+}
+.mn-role-icon {
+    display:block;
+    font-size:22px;
+    margin-bottom:7px
+}
+.mn-role-name {
+    display:block;
+    font-size:10px;
+    font-weight:800;
+    white-space:nowrap
+}
+.mn-field {
+    margin-top:15px
+}
+.mn-field label {
+    display:block;
+    margin-bottom:7px;
+    color:#d9e7ef;
+    font-size:12px;
+    font-weight:700
+}
+.mn-input-wrap {
+    position:relative
+}
+.mn-input-icon {
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#8faabb;
+    font-size:15px;
+    pointer-events:none
+}
+.mn-input {
+    width:100%;
+    min-height:47px;
+    padding:12px 43px 12px 40px;
+    border:1px solid #ffffff24;
+    border-radius:13px;
+    outline:none;
+    background:#03152380;
+    color:#fff;
+    font:inherit;
+    font-size:13px;
+    transition:border-color .25s,box-shadow .25s
+}
+.mn-input::placeholder {
+    color:#7894a7
+}
+.mn-input:focus {
+    border-color:#00dfcf;
+    box-shadow:0 0 0 4px #00dfcf18
+}
+.mn-password-toggle {
+    position:absolute;
+    right:9px;
+    top:50%;
+    transform:translateY(-50%);
+    border:0;
+    background:transparent;
+    color:#a9c2d2;
+    padding:7px;
+    cursor:pointer
+}
+.mn-login-meta {
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:center;
+    margin:14px 0;
+    color:#b1c7d5;
+    font-size:11px
+}
+.mn-remember {
+    display:flex;
+    align-items:center;
+    gap:7px
+}
+.mn-remember input {
+    accent-color:#00dfcf
+}
+.mn-login-meta a {
+    color:#80fff0;
+    text-decoration:none
+}
+.mn-login-submit {
+    width:100%;
+    min-height:49px;
+    border:0;
+    border-radius:14px;
+    color:#042936;
+    background:linear-gradient(110deg,#00e8d4,#82fff0);
+    font-size:13px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 10px 28px #00dfcf24;
+    transition:transform .25s,box-shadow .25s
+}
+.mn-login-submit:hover {
+    transform:translateY(-2px);
+    box-shadow:0 15px 32px #00dfcf36
+}
+.mn-login-submit span {
+    display:inline-block;
+    margin-left:8px;
+    transition:transform .25s
+}
+.mn-login-submit:hover span {
+    transform:translateX(4px)
+}
+.mn-login-note {
+    margin:13px 0 0;
+    text-align:center;
+    color:#8faabb;
+    font-size:10px;
+    line-height:1.6
+}
+.mn-login-note strong {
+    color:#d5e7f0
+}
+.register-prompt {
     text-align: center;
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.08);
-}
-
-.stat-icon {
-    display: block;
-    margin-bottom: 13px;
-    font-size: 24px;
-}
-
-.stat-number {
-    display: block;
-    font-size: 29px;
-    font-weight: 800;
-}
-
-.stat-label {
-    display: block;
-    margin-top: 6px;
-    color: #c7d7e5;
-    font-size: 11px;
-}
-
-.floating-message {
-    position: absolute;
-    right: -10px;
-    top: 5px;
-    max-width: 220px;
-    padding: 18px;
-    border: 1px solid rgba(0,217,208,.3);
-    border-radius: 18px;
-    background: rgba(3, 44, 58, .88);
-    box-shadow: 0 15px 40px rgba(0,0,0,.2);
-    animation: floatCard 4s ease-in-out infinite reverse;
-}
-
-.floating-message strong {
-    display: block;
-    margin-bottom: 8px;
-}
-
-.floating-message small {
-    color: #c4dce6;
-    line-height: 1.6;
-}
-
-/* SERVICES */
-
-.services-section {
-    padding: 65px 0;
-    background: #f5f9fc;
-}
-
-.section-heading {
-    margin-bottom: 38px;
-    text-align: center;
-}
-
-.section-tag {
-    color: #079b9b;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-.section-heading h2 {
-    margin: 13px 0;
-    color: #102a43;
-    font-size: clamp(30px, 4vw, 43px);
-    letter-spacing: -1.3px;
-}
-
-.section-heading p {
-    max-width: 650px;
-    margin: auto;
-    color: #64748b;
-    line-height: 1.8;
-}
-
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 17px;
-}
-
-.service-card {
-    position: relative;
-    padding: 25px 18px;
-    min-height: 180px;
-    border: 1px solid #e2eaf1;
-    border-radius: 19px;
-    background: white;
-    text-decoration: none;
-    color: #102a43;
-    box-shadow: 0 8px 28px rgba(20, 55, 80, .035);
-    transition: transform .3s, border-color .3s, box-shadow .3s;
-}
-
-.service-card:hover {
-    transform: translateY(-8px);
-    border-color: #7de9e0;
-    box-shadow: 0 20px 45px rgba(20, 55, 80, .1);
-}
-
-.service-icon {
-    display: inline-flex;
-    width: 51px;
-    height: 51px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 15px;
-    margin-bottom: 20px;
-    color: white;
-    font-size: 24px;
-    background: linear-gradient(135deg, #00bdb7, #087cf0);
-}
-
-.service-card h3 {
-    font-size: 15px;
-    margin: 0 0 8px;
-}
-
-.service-card p {
-    margin: 0;
-    color: #718096;
-    font-size: 12px;
-    line-height: 1.7;
-}
-
-.service-arrow {
-    position: absolute;
-    top: 28px;
-    right: 20px;
-    color: #0aa8aa;
-    transition: transform .3s;
-}
-
-.service-card:hover .service-arrow {
-    transform: translateX(5px);
-}
-
-/* ABOUT SECTION */
-
-.about-section {
-    padding: 75px 0 90px;
-    background: white;
-}
-
-.about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 65px;
-    align-items: center;
-}
-
-.about-visual {
-    min-height: 350px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    border-radius: 25px;
-    background:
-        linear-gradient(135deg, rgba(0,40,60,.2), rgba(0,180,180,.2)),
-        url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1100&q=85")
-        center/cover;
-}
-
-.about-overlay {
-    position: absolute;
-    bottom: 22px;
-    left: 22px;
-    right: 22px;
-    padding: 23px;
-    border: 1px solid rgba(255,255,255,.25);
-    border-radius: 18px;
-    background: rgba(3, 28, 43, .82);
-    color: white;
-    backdrop-filter: blur(12px);
-}
-
-.about-overlay h3 {
-    margin: 0 0 8px;
-}
-
-.about-overlay p {
-    margin: 0;
-    color: #d2e0eb;
-    font-size: 13px;
-    line-height: 1.7;
-}
-
-.about-content h2 {
-    margin: 15px 0;
-    font-size: clamp(31px, 4vw, 45px);
-    letter-spacing: -1.5px;
-}
-
-.about-content h2 span {
-    color: #00aaa5;
-}
-
-.about-content > p {
-    color: #64748b;
-    line-height: 1.9;
-}
-
-.benefit-list {
-    display: grid;
-    gap: 20px;
-    margin: 30px 0;
-}
-
-.benefit {
-    display: flex;
-    gap: 15px;
-    align-items: flex-start;
-}
-
-.benefit-icon {
-    flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    color: #008f91;
-    background: #dffaf6;
-    font-size: 19px;
-}
-
-.benefit h4 {
-    margin: 2px 0 6px;
-}
-
-.benefit p {
-    margin: 0;
-    color: #718096;
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-/* CTA */
-
-.cta-section {
-    padding: 65px 0;
-    background: #f5f9fc;
-}
-
-.cta-box {
-    position: relative;
-    padding: 55px 35px;
-    border-radius: 27px;
-    overflow: hidden;
-    color: white;
-    text-align: center;
-    background: linear-gradient(120deg, #062c42, #075e6b, #087cf0);
-}
-
-.cta-box::before {
-    content: "";
-    position: absolute;
-    width: 320px;
-    height: 320px;
-    right: -100px;
-    top: -170px;
-    border-radius: 50%;
-    background: rgba(0, 217, 208, .2);
-    filter: blur(20px);
-}
-
-.cta-box h2 {
-    position: relative;
-    margin: 0 0 15px;
-    font-size: clamp(28px, 4vw, 42px);
-}
-
-.cta-box p {
-    position: relative;
-    max-width: 600px;
-    margin: 0 auto 27px;
-    color: #d3e9f2;
-    line-height: 1.8;
-}
-
-/* FOOTER */
-
-.home-footer {
-    padding: 45px 0 25px;
-    color: #c1d3e0;
-    background: #041725;
-}
-
-.footer-grid {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr;
-    gap: 35px;
-    padding-bottom: 30px;
-}
-
-.footer-brand p {
-    max-width: 370px;
-    color: #9db2c2;
-    font-size: 13px;
-    line-height: 1.9;
-}
-
-.footer-column h4 {
-    color: white;
-    margin-top: 0;
-}
-
-.footer-column a {
-    display: block;
-    margin: 12px 0;
-    color: #a8bdcb;
-    font-size: 13px;
-    text-decoration: none;
-}
-
-.footer-column a:hover {
-    color: var(--primary);
-}
-
-.footer-bottom {
+    margin-top: 24px;
     padding-top: 22px;
-    border-top: 1px solid rgba(255,255,255,.1);
-    color: #8ba4b5;
-    font-size: 12px;
-    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* ANIMATIONS */
+.register-prompt p {
+    color: #cbd5e1;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
 
-@keyframes fadeUp {
+.register-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 320px;
+    padding: 13px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(45, 212, 191, 0.5);
+    background: linear-gradient(135deg, #0d9488, #2563eb);
+    color: #ffffff;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 5px 18px rgba(13, 148, 136, 0.2);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.register-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(13, 148, 136, 0.4);
+}
+
+.register-btn span {
+    font-size: 22px;
+}
+
+.register-prompt .register-note {
+    margin-top: 12px;
+    margin-bottom: 0;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #94a3b8;
+}
+
+.mn-stat-strip {
+    position:relative;
+    z-index:2;
+    margin-top:-1px;
+    background:#fff;
+    border-bottom:1px solid var(--mn-border);
+    box-shadow:0 15px 40px #092b4010
+}
+.mn-stats {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    padding:22px 0
+}
+.mn-stat {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:13px;
+    border-right:1px solid var(--mn-border)
+}
+.mn-stat:last-child {
+    border:0
+}
+.mn-stat-icon {
+    display:grid;
+    place-items:center;
+    width:43px;
+    height:43px;
+    border-radius:14px;
+    background:#e4fbf8;
+    font-size:21px
+}
+.mn-stat strong {
+    display:block;
+    color:#102d42;
+    font-size:24px;
+    line-height:1.1
+}
+.mn-stat small {
+    display:block;
+    margin-top:5px;
+    color:var(--mn-muted);
+    font-size:11px
+}
+.mn-section {
+    padding:76px 0
+}
+.mn-section-white {
+    background:#fff
+}
+.mn-section-heading {
+    text-align:center;
+    max-width:720px;
+    margin:0 auto 38px
+}
+.mn-tag {
+    color:#079c9b;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:2px;
+    text-transform:uppercase
+}
+.mn-section-heading h2,.mn-about-copy h2 {
+    margin:12px 0;
+    color:#102b40;
+    font-size:clamp(29px,4vw,43px);
+    line-height:1.15;
+    letter-spacing:-1.5px
+}
+.mn-section-heading p,.mn-about-copy>p {
+    color:var(--mn-muted);
+    font-size:14px;
+    line-height:1.85
+}
+.mn-feature-grid {
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:15px
+}
+.mn-feature {
+    position:relative;
+    min-height:190px;
+    padding:23px 18px;
+    border:1px solid #e2ebf1;
+    border-radius:20px;
+    background:#fff;
+    text-decoration:none;
+    box-shadow:0 7px 24px #173e5708;
+    transition:transform .3s,border-color .3s,box-shadow .3s
+}
+.mn-feature:hover {
+    transform:translateY(-7px);
+    border-color:#8be8df;
+    box-shadow:0 20px 40px #173e5714
+}
+.mn-feature-icon {
+    display:grid;
+    place-items:center;
+    width:49px;
+    height:49px;
+    margin-bottom:18px;
+    border-radius:15px;
+    color:#032b39;
+    background:linear-gradient(135deg,#00dfcf,#72eaff);
+    font-size:23px
+}
+.mn-feature h3 {
+    margin:0 0 8px;
+    color:#102b40;
+    font-size:14px
+}
+.mn-feature p {
+    margin:0;
+    color:#6b8090;
+    font-size:12px;
+    line-height:1.7
+}
+.mn-feature-arrow {
+    position:absolute;
+    right:17px;
+    top:24px;
+    color:#069e9a;
+    font-size:18px;
+    transition:transform .25s
+}
+.mn-feature:hover .mn-feature-arrow {
+    transform:translateX(4px)
+}
+.mn-about-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:center;
+    gap:58px
+}
+.mn-about-visual {
+    position:relative;
+    min-height:360px;
+    border-radius:26px;
+    overflow:hidden;
+    background:linear-gradient(135deg,#062b42aa,#00b6b066),url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1100&q=85") center/cover
+}
+.mn-about-glass {
+    position:absolute;
+    left:22px;
+    right:22px;
+    bottom:22px;
+    padding:22px;
+    border:1px solid #ffffff38;
+    border-radius:18px;
+    background:#041c2dd9;
+    color:#fff;
+    backdrop-filter:blur(15px)
+}
+.mn-about-glass h3 {
+    margin:0 0 7px;
+    font-size:18px
+}
+.mn-about-glass p {
+    margin:0;
+    color:#d0e0ea;
+    font-size:12px;
+    line-height:1.7
+}
+.mn-benefits {
+    display:grid;
+    gap:18px;
+    margin:25px 0 28px
+}
+.mn-benefit {
+    display:flex;
+    gap:13px;
+    align-items:flex-start
+}
+.mn-benefit-icon {
+    display:grid;
+    place-items:center;
+    flex:0 0 42px;
+    height:42px;
+    border-radius:14px;
+    background:#e1faf6;
+    color:#008f91;
+    font-size:19px
+}
+.mn-benefit h3 {
+    margin:2px 0 5px;
+    font-size:14px
+}
+.mn-benefit p {
+    margin:0;
+    color:#718596;
+    font-size:12px;
+    line-height:1.7
+}
+.mn-cta {
+    position:relative;
+    overflow:hidden;
+    padding:54px 25px;
+    border-radius:28px;
+    color:#fff;
+    text-align:center;
+    background:linear-gradient(115deg,#062b42,#075b6a,#087cf0)
+}
+.mn-cta:before {
+    content:"";
+    position:absolute;
+    width:300px;
+    height:300px;
+    right:-100px;
+    top:-190px;
+    border-radius:50%;
+    background:#00dfcf33;
+    filter:blur(20px)
+}
+.mn-cta h2 {
+    position:relative;
+    margin:0 0 12px;
+    font-size:clamp(27px,4vw,40px);
+    letter-spacing:-1px
+}
+.mn-cta p {
+    position:relative;
+    max-width:650px;
+    margin:0 auto 23px;
+    color:#d1e8f2;
+    font-size:13px;
+    line-height:1.8
+}
+.mn-footer {
+    padding:42px 0 22px;
+    background:#041725;
+    color:#bfd1df
+}
+.mn-footer-grid {
+    display:grid;
+    grid-template-columns:1.5fr 1fr 1fr;
+    gap:32px;
+    padding-bottom:27px
+}
+.mn-footer p {
+    max-width:380px;
+    color:#92aabc;
+    font-size:12px;
+    line-height:1.8
+}
+.mn-footer h3 {
+    margin:0 0 14px;
+    color:#fff;
+    font-size:13px
+}
+.mn-footer a {
+    display:block;
+    margin:11px 0;
+    color:#a9c0cf;
+    text-decoration:none;
+    font-size:12px
+}
+.mn-footer a:hover {
+    color:var(--mn-teal)
+}
+.mn-footer-bottom {
+    padding-top:20px;
+    border-top:1px solid #ffffff17;
+    text-align:center;
+    color:#829bad;
+    font-size:11px
+}
+.mn-reveal {
+    opacity:0;
+    transform:translateY(24px);
+    transition:opacity .7s ease,transform .7s ease
+}
+.mn-reveal.mn-visible {
+    opacity:1;
+    transform:translateY(0)
+}
+@keyframes mnUp {
     from {
-        opacity: 0;
-        transform: translateY(25px);
+        opacity:0;
+        transform:translateY(22px)
     }
     to {
-        opacity: 1;
-        transform: translateY(0);
+        opacity:1;
+        transform:translateY(0)
     }
 }
-
-@keyframes floatCard {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
+@keyframes mnLoginIn {
+    from {
+        opacity:0;
+        transform:translateY(26px) scale(.97)
+    }
+    to {
+        opacity:1;
+        transform:translateY(0) scale(1)
+    }
 }
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-        box-shadow: 0 0 0 0 rgba(54,244,161,.5);
+@keyframes mnPulse {
+    0%,100% {
+        box-shadow:0 0 0 0 #47f6ac44
     }
     50% {
-        opacity: .65;
-        box-shadow: 0 0 0 7px rgba(54,244,161,0);
+        box-shadow:0 0 0 8px #47f6ac00
     }
 }
-
-.reveal {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity .7s ease, transform .7s ease;
-}
-
-.reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 1000px) {
-    .hero-grid {
-        grid-template-columns: 1fr;
+@keyframes mnGlow {
+    from {
+        transform:translate3d(0,-8px,0) scale(.96);
+        opacity:.55
     }
-
-    .hero-visual {
-        min-height: 330px;
-    }
-
-    .floating-message {
-        right: 0;
-    }
-
-    .services-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .about-grid {
-        gap: 35px;
+    to {
+        transform:translate3d(0,12px,0) scale(1.04);
+        opacity:1
     }
 }
-
-@media (max-width: 700px) {
-    .nav-inner {
-        min-height: 70px;
+@media(max-width:1050px) {
+    .mn-hero-grid {
+        grid-template-columns:1fr;
+        gap:42px
     }
-
-    .nav-links {
-        gap: 12px;
+    .mn-login-wrap {
+        justify-self:start;
+        max-width:600px
     }
-
-    .nav-links a:not(.nav-login) {
-        display: none;
+    .mn-feature-grid {
+        grid-template-columns:repeat(3,minmax(0,1fr))
     }
-
-    .home-logo {
-        font-size: 20px;
+    .mn-hero-inner {
+        padding-top:125px
     }
-
-    .nav-login {
-        padding: 10px 14px;
-        font-size: 12px !important;
-    }
-
-    .hero {
-        min-height: auto;
-    }
-
-    .hero-content {
-        padding-top: 125px;
-        padding-bottom: 55px;
-    }
-
-    .hero h1 {
-        letter-spacing: -1.5px;
-    }
-
-    .hero-description {
-        font-size: 15px;
-    }
-
-    .hero-trust {
-        gap: 20px;
-    }
-
-    .hero-visual {
-        min-height: 310px;
-        margin-top: 10px;
-    }
-
-    .floating-card {
-        padding: 18px;
-    }
-
-    .floating-message {
-        top: -10px;
-        right: 0;
-        max-width: 170px;
-        padding: 12px;
-    }
-
-    .stat-number {
-        font-size: 23px;
-    }
-
-    .services-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .service-card {
-        padding: 18px 14px;
-    }
-
-    .about-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .about-visual {
-        min-height: 300px;
-    }
-
-    .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .cta-box {
-        padding: 40px 20px;
+    .mn-about-grid {
+        gap:32px
     }
 }
-
-@media (prefers-reduced-motion: reduce) {
-    .homepage *,
-    .homepage *::before,
-    .homepage *::after {
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
-        scroll-behavior: auto !important;
+@media(max-width:700px) {
+    .mn-nav-inner {
+        min-height:67px
     }
-
-    .reveal {
-        opacity: 1;
-        transform: none;
+    .mn-nav-links {
+        gap:10px
+    }
+    .mn-nav-links>a:not(.mn-nav-cta) {
+        display:none
+    }
+    .mn-brand {
+        font-size:19px
+    }
+    .mn-brand-mark {
+        width:32px;
+        height:32px;
+        font-size:19px
+    }
+    .mn-nav-cta {
+        padding:10px 13px;
+        font-size:11px
+    }
+    .mn-hero-inner {
+        padding:108px 0 46px
+    }
+    .mn-hero-grid {
+        gap:30px
+    }
+    .mn-hero h1 {
+        font-size:clamp(37px,10vw,53px);
+        letter-spacing:-1.7px
+    }
+    .mn-hero-copy {
+        font-size:14px;
+        line-height:1.8
+    }
+    .mn-trust-row {
+        gap:12px
+    }
+    .mn-trust {
+        font-size:10px
+    }
+    .mn-login-card {
+        padding:20px 16px;
+        border-radius:22px
+    }
+    .mn-login-head h2 {
+        font-size:21px
+    }
+    .mn-secure-badge {
+        font-size:9px;
+        padding:6px 7px
+    }
+    .mn-role-grid {
+        gap:6px
+    }
+    .mn-role {
+        padding:10px 2px;
+        border-radius:12px
+    }
+    .mn-role-icon {
+        font-size:20px
+    }
+    .mn-role-name {
+        font-size:9px
+    }
+    .mn-stats {
+        padding:17px 0
+    }
+    .mn-stat {
+        gap:7px;
+        padding:0 5px
+    }
+    .mn-stat-icon {
+        width:34px;
+        height:34px;
+        border-radius:11px;
+        font-size:17px
+    }
+    .mn-stat strong {
+        font-size:19px
+    }
+    .mn-stat small {
+        font-size:9px
+    }
+    .mn-section {
+        padding:55px 0
+    }
+    .mn-feature-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:11px
+    }
+    .mn-feature {
+        min-height:174px;
+        padding:18px 13px
+    }
+    .mn-feature h3 {
+        font-size:13px
+    }
+    .mn-feature p {
+        font-size:11px
+    }
+    .mn-about-grid {
+        grid-template-columns:1fr
+    }
+    .mn-about-visual {
+        min-height:285px
+    }
+    .mn-footer-grid {
+        grid-template-columns:1fr;
+        gap:18px
+    }
+    .mn-cta {
+        padding:39px 19px
+    }
+}
+@media(max-width:380px) {
+    .mn-login-head {
+        display:block
+    }
+    .mn-secure-badge {
+        display:inline-block;
+        margin-top:10px
+    }
+    .mn-role-name {
+        font-size:8px
+    }
+    .mn-login-card {
+        padding:17px 12px
+    }
+    .mn-trust-row {
+        display:grid;
+        grid-template-columns:1fr 1fr
+    }
+    .mn-stat-icon {
+        display:none
+    }
+}
+@media(prefers-reduced-motion:reduce) {
+    .homepage *,.homepage *:before,.homepage *:after {
+        animation-duration:.01ms!important;
+        animation-iteration-count:1!important;
+        scroll-behavior:auto!important;
+        transition-duration:.01ms!important
+    }
+    .mn-reveal {
+        opacity:1;
+        transform:none
     }
 }
 </style>
 
-<div class="homepage">
+<div class="homepage" id="mn-home">
+  <header class="mn-nav">
+    <div class="mn-container mn-nav-inner">
+      <a href="/" class="mn-brand"><span class="mn-brand-mark">✚</span> MediNexus<span>AI</span></a>
+      <nav class="mn-nav-links" aria-label="Main navigation">
+        <a href="#mn-home-top">Home</a><a href="#mn-features">Features</a><a href="#mn-about">About</a>
+        <a class="mn-nav-cta" href="#mn-login">Sign in / Choose role ↓</a>
+      </nav>
+    </div>
+  </header>
 
-    <!-- NAVIGATION -->
-    <header class="home-nav">
-        <div class="home-container nav-inner">
-
-            <a href="/" class="home-logo">
-                <span class="logo-icon">✚</span>MediNexus<span>AI</span>
-            </a>
-
-            <nav class="nav-links" aria-label="Main navigation">
-                <a href="#home">Home</a>
-                <a href="#features">Features</a>
-                <a href="#departments">Departments</a>
-                <a href="#about">About</a>
-                <a href="#contact">Contact</a>
-                <a href="/accounts/login/" class="nav-login">
-                    ♙ Choose Login ↓
-                </a>
-            </nav>
-
-        </div>
-    </header>
-
-    <!-- HERO SECTION -->
-    <section class="hero" id="home">
-
-        <div class="home-container hero-content">
-
-            <div class="hero-grid">
-
-                <div>
-
-                    <div class="hero-badge">
-                        ✦ AI-Powered Hospital Management
-                    </div>
-
-                    <h1>
-                        Smarter Healthcare<br>
-                        for a <span>Healthier Tomorrow</span>
-                    </h1>
-
-                    <p class="hero-description">
-                        MediNexusAI brings patients, doctors and hospitals
-                        together with intelligent healthcare technology.
-                        Book appointments, manage medical records, explore
-                        hospital services and access support in one place.
-                    </p>
-
-                    <div class="hero-actions">
-
-                        <a href="/accounts/login/" class="btn-primary">
-                            ♧ Book Appointment <span>→</span>
-                        </a>
-
-                        <a href="#features" class="btn-outline">
-                            ▶ Explore Features
-                        </a>
-
-                    </div>
-
-                    <div class="hero-trust">
-
-                        <div class="trust-item">
-                            <span class="trust-icon">🛡️</span>
-                            <strong>Privacy Focused</strong>
-                            <small>Protect patient information</small>
-                        </div>
-
-                        <div class="trust-item">
-                            <span class="trust-icon">🤖</span>
-                            <strong>AI Assistant</strong>
-                            <small>Smart digital support</small>
-                        </div>
-
-                        <div class="trust-item">
-                            <span class="trust-icon">🩺</span>
-                            <strong>Care Team</strong>
-                            <small>Connect with doctors</small>
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- FLOATING HOSPITAL STATS -->
-                <div class="hero-visual">
-
-                    <div class="floating-message">
-                        <strong>💚 Connected Healthcare</strong>
-                        <small>
-                            Modern technology designed to make
-                            hospital services easier to access.
-                        </small>
-                    </div>
-
-                    <div class="floating-card">
-
-                        <div class="card-top">
-                            <strong>Hospital Overview</strong>
-                            <span class="live-status">System Online</span>
-                        </div>
-
-                        <div class="stat-grid">
-
-                            <div class="stat-box">
-                                <span class="stat-icon">🧑‍⚕️</span>
-                                <span class="stat-number counter"
-                                      data-target="{{ total_doctors|default:0 }}">
-                                    0
-                                </span>
-                                <span class="stat-label">Doctors</span>
-                            </div>
-
-                            <div class="stat-box">
-                                <span class="stat-icon">👥</span>
-                                <span class="stat-number counter"
-                                      data-target="{{ total_patients|default:0 }}">
-                                    0
-                                </span>
-                                <span class="stat-label">Patients</span>
-                            </div>
-
-                            <div class="stat-box">
-                                <span class="stat-icon">🛏️</span>
-                                <span class="stat-number counter"
-                                      data-target="{{ available_beds|default:0 }}">
-                                    0
-                                </span>
-                                <span class="stat-label">Available Beds</span>
-                            </div>
-
-                        </div>
-
-                        <p style="color:#b7cbd8;font-size:12px;margin:22px 0 0;">
-                            Healthcare services, brought together in one place.
-                        </p>
-
-                    </div>
-
-                </div>
-
+  <main>
+    <section class="mn-hero" id="mn-home-top">
+      <div class="mn-container mn-hero-inner">
+        <div class="mn-hero-grid">
+          <div>
+            <div class="mn-eyebrow"><span class="mn-live-dot"></span> Connected care • smarter workflows</div>
+            <h1>Smarter Healthcare<br>for a <em>Healthier Tomorrow.</em></h1>
+            <p class="mn-hero-copy">MediNexusAI brings patients, doctors and hospital teams together. Book appointments, access authorized records and explore hospital services through one modern digital platform.</p>
+            <div class="mn-hero-actions">
+              <a href="#mn-login" class="mn-btn mn-btn-primary">Sign in to your portal <span>→</span></a>
+              <a href="#mn-features" class="mn-btn mn-btn-ghost">Explore features ↓</a>
             </div>
+            <div class="mn-trust-row">
+              <div class="mn-trust"><span class="mn-trust-icon">🔒</span> Privacy-conscious access</div>
+              <div class="mn-trust"><span class="mn-trust-icon">🤖</span> Digital assistant</div>
+              <div class="mn-trust"><span class="mn-trust-icon">🩺</span> Connected care team</div>
+            </div>
+          </div>
+<div class="mn-login-wrap" id="mn-login">
+            <div class="mn-login-glow"></div>
+            <section class="mn-login-card" aria-labelledby="mn-login-title">
+              <div class="mn-login-head">
+                <div><h2 id="mn-login-title">Welcome back 👋</h2><p>Choose your portal, then enter your login details.</p></div>
+                <span class="mn-secure-badge">● SECURE ACCESS</span>
+              </div>
 
+              <form method="post" action="/accounts/login/" id="mn-login-form">
+                
+                <input type="hidden" name="role" id="mn-selected-role" value="patient">
+                <span class="mn-role-label">Choose your login</span>
+                <div class="mn-role-grid" role="group" aria-label="Choose account type">
+                  <button type="button" class="mn-role" data-role="patient" aria-pressed="true"><span class="mn-role-icon">🧑‍⚕️</span><span class="mn-role-name">Patient</span></button>
+                  <button type="button" class="mn-role" data-role="doctor" aria-pressed="false"><span class="mn-role-icon">🩺</span><span class="mn-role-name">Doctor</span></button>
+                  <button type="button" class="mn-role" data-role="admin" aria-pressed="false"><span class="mn-role-icon">🛡️</span><span class="mn-role-name">Admin</span></button>
+                </div>
+
+                <div class="mn-field">
+                  <label for="mn-username">Username or email</label>
+                  <div class="mn-input-wrap"><span class="mn-input-icon">✉</span><input class="mn-input" id="mn-username" name="username" type="text" autocomplete="username" placeholder="Enter your username" required></div>
+                </div>
+                <div class="mn-field">
+                  <label for="mn-password">Password</label>
+                  <div class="mn-input-wrap"><span class="mn-input-icon">🔑</span><input class="mn-input" id="mn-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required><button class="mn-password-toggle" type="button" id="mn-toggle-password" aria-label="Show password">Show</button></div>
+                </div>
+                <div class="mn-login-meta"><label class="mn-remember"><input type="checkbox" name="remember_me"> Remember me</label><a href="/accounts/password_reset/">Forgot password?</a></div>
+                <button class="mn-login-submit" type="submit">Sign in securely <span>→</span></button>
+                <p class="mn-login-note">Your selected portal: <strong id="mn-role-display">Patient</strong><br>Access to patient information should be limited to authorized accounts.</p>
+              </form>
+
+             <div class="register-prompt">
+    <p>New to MediNexusAI?</p>
+
+    <a href="/accounts/patient-signup/" class="register-btn">
+        <span>＋</span> Create Patient Account
+    </a>
+
+    <p class="register-note">
+        Register to book appointments and manage your health records.
+    </p>
+</div>
+            </section>
+          </div>
         </div>
-
+      </div>
     </section>
 
-    <!-- FEATURES -->
-    <section class="services-section" id="features">
-
-        <div class="home-container">
-
-            <div class="section-heading reveal">
-                <span class="section-tag">One Connected Platform</span>
-                <h2>Healthcare Made Simpler</h2>
-                <p>
-                    Explore digital tools that help patients and
-                    healthcare teams access essential hospital services.
-                </p>
-            </div>
-
-            <div class="services-grid">
-
-                <a href="/accounts/login/" class="service-card reveal">
-                    <span class="service-icon">📅</span>
-                    <span class="service-arrow">→</span>
-                    <h3>Appointments</h3>
-                    <p>Access appointment booking and scheduling.</p>
-                </a>
-
-                <a href="/accounts/login/" class="service-card reveal">
-                    <span class="service-icon">📋</span>
-                    <span class="service-arrow">→</span>
-                    <h3>Medical Records</h3>
-                    <p>Access authorized medical history and reports.</p>
-                </a>
-
-                <a href="/accounts/login/" class="service-card reveal">
-                    <span class="service-icon">🤖</span>
-                    <span class="service-arrow">→</span>
-                    <h3>AI Assistant</h3>
-                    <p>Explore your hospital's digital assistant.</p>
-                </a>
-
-                <a href="/accounts/login/" class="service-card reveal">
-                    <span class="service-icon">🛏️</span>
-                    <span class="service-arrow">→</span>
-                    <h3>Bed Management</h3>
-                    <p>Support hospital bed and availability workflows.</p>
-                </a>
-
-                <a href="/accounts/login/" class="service-card reveal">
-                    <span class="service-icon">🧪</span>
-                    <span class="service-arrow">→</span>
-                    <h3>Lab & Pharmacy</h3>
-                    <p>Access laboratory and pharmacy services.</p>
-                </a>
-
-            </div>
-
-        </div>
-
+    <section class="mn-stat-strip" aria-label="Hospital statistics">
+      <div class="mn-container mn-stats">
+        <div class="mn-stat"><span class="mn-stat-icon">🧑‍⚕️</span><div><strong class="mn-counter" data-target="{{ total_doctors|default:0 }}">0</strong><small>Registered doctors</small></div></div>
+        <div class="mn-stat"><span class="mn-stat-icon">👥</span><div><strong class="mn-counter" data-target="{{ total_patients|default:0 }}">0</strong><small>Registered patients</small></div></div>
+        <div class="mn-stat"><span class="mn-stat-icon">🛏️</span><div><strong class="mn-counter" data-target="{{ available_beds|default:0 }}">0</strong><small>Available beds</small></div></div>
+      </div>
     </section>
 
-    <!-- ABOUT -->
-    <section class="about-section" id="about">
-
-        <div class="home-container about-grid">
-
-            <div class="about-visual reveal">
-
-                <div class="about-overlay">
-                    <h3>Technology with a Human Touch</h3>
-                    <p>
-                        A connected digital experience for patients,
-                        doctors and hospital administrators.
-                    </p>
-                </div>
-
-            </div>
-
-            <div class="about-content reveal">
-
-                <span class="section-tag">Why MediNexusAI?</span>
-
-                <h2>
-                    Advanced Technology.<br>
-                    <span>Human Care.</span>
-                </h2>
-
-                <p>
-                    Our platform brings essential hospital workflows
-                    together to help improve organization, accessibility
-                    and communication.
-                </p>
-
-                <div class="benefit-list">
-
-                    <div class="benefit">
-                        <span class="benefit-icon">⚡</span>
-                        <div>
-                            <h4>Simplified Hospital Services</h4>
-                            <p>
-                                Find important hospital tools and
-                                services through one convenient interface.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="benefit">
-                        <span class="benefit-icon">🔒</span>
-                        <div>
-                            <h4>Privacy-Conscious Design</h4>
-                            <p>
-                                Patient records should be accessible
-                                only to authorized users.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="benefit">
-                        <span class="benefit-icon">💻</span>
-                        <div>
-                            <h4>Digital-First Experience</h4>
-                            <p>
-                                Access supported services from desktop,
-                                tablet or mobile devices.
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-
-                <a href="/accounts/login/" class="btn-primary">
-                    Explore Your Portal →
-                </a>
-
-            </div>
-
+    <section class="mn-section" id="mn-features">
+      <div class="mn-container">
+        <div class="mn-section-heading mn-reveal"><span class="mn-tag">One connected platform</span><h2>Healthcare, made simpler.</h2><p>Quick access to digital tools for patients and healthcare teams, with role-based access handled by your hospital account system.</p></div>
+        <div class="mn-feature-grid">
+          <a href="/accounts/login/" class="mn-feature mn-reveal"><span class="mn-feature-icon">📅</span><span class="mn-feature-arrow">↗</span><h3>Appointments</h3><p>Access appointment booking and scheduling.</p></a>
+          <a href="/accounts/login/" class="mn-feature mn-reveal"><span class="mn-feature-icon">📋</span><span class="mn-feature-arrow">↗</span><h3>Medical records</h3><p>View authorized medical history and reports.</p></a>
+          <a href="/ai-assistant/" class="mn-feature mn-reveal"><span class="mn-feature-icon">🤖</span><span class="mn-feature-arrow">↗</span><h3>AI assistant</h3><p>Open the hospital's digital assistant.</p></a>
+          <a href="/accounts/login/" class="mn-feature mn-reveal"><span class="mn-feature-icon">🛏️</span><span class="mn-feature-arrow">↗</span><h3>Bed management</h3><p>Support hospital bed and availability workflows.</p></a>
+          <a href="/accounts/login/" class="mn-feature mn-reveal"><span class="mn-feature-icon">🧪</span><span class="mn-feature-arrow">↗</span><h3>Lab & pharmacy</h3><p>Access available laboratory and pharmacy services.</p></a>
         </div>
-
+      </div>
     </section>
 
-    <!-- CALL TO ACTION -->
-    <section class="cta-section" id="departments">
-
-        <div class="home-container">
-
-            <div class="cta-box reveal">
-
-                <h2>Your Healthcare Journey Starts Here</h2>
-
-                <p>
-                    Sign in to access the hospital services available
-                    to your account. Patients, doctors and authorized
-                    staff can use their respective portals.
-                </p>
-
-                <a href="/accounts/login/" class="btn-primary">
-                    Choose Your Portal →
-                </a>
-
-            </div>
-
+    <section class="mn-section mn-section-white" id="mn-about">
+      <div class="mn-container mn-about-grid">
+        <div class="mn-about-visual mn-reveal"><div class="mn-about-glass"><h3>Technology with a human touch</h3><p>A connected digital experience for patients, doctors and hospital administrators.</p></div></div>
+        <div class="mn-about-copy mn-reveal"><span class="mn-tag">Why MediNexusAI?</span><h2>Advanced technology.<br><span style="color:#00a9a2">Human care.</span></h2><p>MediNexusAI brings essential hospital workflows together to help improve organization, accessibility and communication.</p>
+          <div class="mn-benefits">
+            <div class="mn-benefit"><span class="mn-benefit-icon">⚡</span><div><h3>Simplified hospital services</h3><p>Find important hospital tools and services through one convenient interface.</p></div></div>
+            <div class="mn-benefit"><span class="mn-benefit-icon">🔐</span><div><h3>Privacy-conscious design</h3><p>Patient records should only be available to appropriately authorized users.</p></div></div>
+            <div class="mn-benefit"><span class="mn-benefit-icon">📱</span><div><h3>Desktop and mobile ready</h3><p>Responsive layouts adapt to desktop, tablet and Android screen sizes.</p></div></div>
+          </div>
+          
         </div>
-
+      </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="home-footer" id="contact">
+    <section class="mn-section">
+      <div class="mn-container"><div class="mn-cta mn-reveal"><h2>Your healthcare journey starts here.</h2><p>Choose your account type in the login panel above to continue to the portal. Your account permissions and available features depend on the backend configuration.</p><a href="#mn-login" class="mn-btn mn-btn-primary">Choose your login <span>→</span></a></div></div>
+    </section>
+  </main>
 
-        <div class="home-container">
-
-            <div class="footer-grid">
-
-                <div class="footer-brand">
-
-                    <a href="/" class="home-logo">
-                        ✚ MediNexus<span>AI</span>
-                    </a>
-
-                    <p>
-                        A digital hospital management platform designed
-                        to connect healthcare workflows, patient services
-                        and hospital teams.
-                    </p>
-
-                </div>
-
-                <div class="footer-column">
-                    <h4>Explore</h4>
-                    <a href="#home">Home</a>
-                    <a href="#features">Features</a>
-                    <a href="#about">About Us</a>
-                </div>
-
-                <div class="footer-column">
-                    <h4>Access</h4>
-                    <a href="/accounts/login/">Login</a>
-                    <a href="#departments">Hospital Services</a>
-                    <a href="#contact">Contact</a>
-                </div>
-
-            </div>
-
-            <div class="footer-bottom">
-                © {% now "Y" %} MediNexusAI. All rights reserved.
-            </div>
-
-        </div>
-
-    </footer>
-
+  <footer class="mn-footer">
+    <div class="mn-container">
+      <div class="mn-footer-grid">
+        <div><a href="/" class="mn-brand"><span class="mn-brand-mark">✚</span> MediNexus<span>AI</span></a><p>A digital hospital management platform designed to connect healthcare workflows, patient services and hospital teams.</p></div>
+        <div><h3>Explore</h3><a href="#mn-home-top">Home</a><a href="#mn-features">Features</a><a href="#mn-about">About us</a></div>
+        <div><h3>Portal</h3><a href="#mn-login">Choose login</a><a href="/accounts/login/">Existing login page</a><a href="#mn-features">Hospital services</a></div>
+      </div>
+      <div class="mn-footer-bottom">© 2027 MediNexusAI. All rights reserved.</div>
+    </div>
+  </footer>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    // Reveal sections while scrolling
-    const revealElements = document.querySelectorAll(".reveal");
-
-    if ("IntersectionObserver" in window) {
-
-        const observer = new IntersectionObserver(function (entries) {
-
-            entries.forEach(function (entry) {
-
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("visible");
-                    observer.unobserve(entry.target);
-                }
-
-            });
-
-        }, {
-            threshold: 0.12
-        });
-
-        revealElements.forEach(function (element) {
-            observer.observe(element);
-        });
-
-    } else {
-        revealElements.forEach(function (element) {
-            element.classList.add("visible");
-        });
-    }
-
-    // Animate real statistics supplied by Django
-    const counters = document.querySelectorAll(".counter");
-
-    counters.forEach(function (counter) {
-
-        const target = Number(counter.dataset.target);
-
-        if (!Number.isFinite(target) || target < 0) {
-            counter.textContent = "0";
-            return;
-        }
-
-        const duration = 1200;
-        const startTime = performance.now();
-
-        function updateCounter(currentTime) {
-
-            const progress = Math.min(
-                (currentTime - startTime) / duration,
-                1
-            );
-
-            const easedProgress = 1 - Math.pow(1 - progress, 4);
-
-            counter.textContent = Math.floor(
-                target * easedProgress
-            ).toLocaleString();
-
-            if (progress < 1) {
-                requestAnimationFrame(updateCounter);
-            } else {
-                counter.textContent = target.toLocaleString();
-            }
-        }
-
-        requestAnimationFrame(updateCounter);
-
+(function(){
+  function initMediNexus(){
+    const root=document.getElementById('mn-home');
+    if(!root || root.dataset.initialized==='true') return;
+    root.dataset.initialized='true';
+    const roleButtons=root.querySelectorAll('.mn-role');
+    const roleInput=root.querySelector('#mn-selected-role');
+    const roleDisplay=root.querySelector('#mn-role-display');
+    roleButtons.forEach(button=>{
+      button.addEventListener('click',()=>{
+        roleButtons.forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+        const role=button.dataset.role;
+        roleInput.value=role;
+        roleDisplay.textContent=role.charAt(0).toUpperCase()+role.slice(1);
+      });
     });
-
-});
+    const toggle=root.querySelector('#mn-toggle-password');
+    const password=root.querySelector('#mn-password');
+    if(toggle && password){
+      toggle.addEventListener('click',()=>{
+        const show=password.type==='password';
+        password.type=show?'text':'password';
+        toggle.textContent=show?'Hide':'Show';
+        toggle.setAttribute('aria-label',show?'Hide password':'Show password');
+      });
+    }
+    const revealItems=root.querySelectorAll('.mn-reveal');
+    if('IntersectionObserver' in window){
+      const observer=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){entry.target.classList.add('mn-visible');observer.unobserve(entry.target);}
+        });
+      },{threshold:.12});
+      revealItems.forEach(item=>observer.observe(item));
+    }else{revealItems.forEach(item=>item.classList.add('mn-visible'));}
+    root.querySelectorAll('.mn-counter').forEach(counter=>{
+      const target=Number(counter.dataset.target);
+      if(!Number.isFinite(target)||target<0){counter.textContent='0';return;}
+      const duration=1100,start=performance.now();
+      function tick(now){
+        const progress=Math.min((now-start)/duration,1);
+        const eased=1-Math.pow(1-progress,4);
+        counter.textContent=Math.floor(target*eased).toLocaleString();
+        if(progress<1) requestAnimationFrame(tick);
+        else counter.textContent=target.toLocaleString();
+      }
+      requestAnimationFrame(tick);
+    });
+    const form=root.querySelector('#mn-login-form');
+    if(form){
+      form.addEventListener('submit',event=>{
+        const username=root.querySelector('#mn-username');
+        const pass=root.querySelector('#mn-password');
+        if(!username.value.trim()||!pass.value){
+          event.preventDefault();
+          (!username.value.trim()?username:pass).focus();
+        }
+      });
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initMediNexus);
+  else initMediNexus();
+})();
 </script>
-
-{% endblock %}
