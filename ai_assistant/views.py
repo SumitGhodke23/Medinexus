@@ -20,51 +20,88 @@ from .models import ChatMessage
 
 
 def ask_ollama(question):
-    """Generate an answer using a configurable Ollama API endpoint."""
+    """Generate an AI answer using the hosted Gemini API."""
 
-    api_url = os.environ.get(
-        "OLLAMA_API_URL",
-        "http://localhost:11434/api/generate",
+    api_key = os.environ.get("GEMINI_API_KEY")
+
+    if not api_key:
+        return "AI service is not configured. Please contact the administrator."
+
+    api_url = (
+        "https://generativelanguage.googleapis.com/v1beta/"
+        "models/gemini-2.5-flash:generateContent"
     )
 
-    model = os.environ.get("OLLAMA_MODEL", "llama3.2:1b")
-
     prompt = (
-        "You are MediNexusAI, a hospital information assistant. "
-        "Answer in simple English and keep answers concise. "
-        "Do not invent patient records, appointments, doctors, "
-        "medical results, or hospital statistics. "
-        "Do not diagnose patients or replace a qualified doctor. "
-        "For emergencies, tell the user to contact local emergency "
-        "services or hospital staff immediately. "
-        "For general health questions, provide general educational "
-        "information and recommend professional medical advice when appropriate.\n\n"
+        "You are MediNexusAI, a helpful hospital information assistant. "
+        "Answer in simple English. Be clear, friendly, and concise. "
+        "For general health questions, provide educational information only. "
+        "Do not diagnose diseases or replace a qualified doctor. "
+        "For emergencies, tell the user to contact local emergency services "
+        "or hospital staff immediately. "
+        "Never invent patient records, appointments, doctors, test results, "
+        "or hospital statistics. "
+        "Do not claim to have booked an appointment unless the hospital "
+        "booking system confirms it.\n\n"
         f"User question: {question}"
     )
 
     try:
         response = requests.post(
             api_url,
+            params={"key": api_key},
             json={
-                "model": model,
-                "prompt": prompt,
-                "stream": False,
+                "contents": [
+                    {
+                        "parts": [
+                            {"text": prompt}
+                        ]
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 0.4,
+                    "maxOutputTokens": 500,
+                },
             },
-            timeout=90,
+            timeout=45,
         )
 
         response.raise_for_status()
         data = response.json()
 
-        answer = data.get("response", "").strip()
+        candidates = data.get("candidates", [])
+        if not candidates:
+            return "Sorry, the AI could not generate an answer. Please try again."
 
-        return answer or "Sorry, I could not generate an answer."
+        parts = candidates[0].get("content", {}).get("parts", [])
+        answer = " ".join(
+            part.get("text", "")
+            for part in parts
+            if part.get("text")
+        ).strip()
 
-    except requests.RequestException:
-        return (
-            "The AI service is currently unavailable. "
-            "Please check the AI service configuration and try again."
+        return answer or "Sorry, the AI returned an empty answer."
+
+    except requests.Timeout:
+        return "The AI is taking too long to respond. Please try again."
+
+    except requests.HTTPError as error:
+        status_code = (
+            error.response.status_code
+            if error.response is not None
+            else "unknown"
         )
+
+        if status_code in (401, 403):
+            return "The AI API key is invalid or does not have permission."
+
+        if status_code == 429:
+            return "The AI service usage limit has been reached. Please try later."
+
+        return f"The AI service returned an error (HTTP {status_code}). Please try again."
+
+    except (requests.RequestException, ValueError):
+        return "The AI service is temporarily unavailable. Please try again."
 
 
 def answer_question(question, user):
